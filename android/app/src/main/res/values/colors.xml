@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ap_darkred">#97000C</color>
+    <color name="ap_red">#C40009</color>
+    <color name="ap_gray">#68676C</color>
+    <color name="ap_white">#FFFFFF</color>
+    <color name="ap_black">#000000</color>
+    <color name="ap_green">#62985B</color>
+</resources>
