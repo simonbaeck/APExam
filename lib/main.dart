@@ -45,23 +45,24 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _selectedIndex = index;
     });
-    pageController.animateToPage(index, duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
+    pageController.animateToPage(index,
+        duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: PageView(
-        controller: pageController,
-        onPageChanged: (page){
-          setState(() {
-            _selectedIndex=page;
-          });
-        },
-        children: const [
-          StudentLoginScreen(),
-          AdminLoginScreen(),
-      ]),
+          controller: pageController,
+          onPageChanged: (page) {
+            setState(() {
+              _selectedIndex = page;
+            });
+          },
+          children: const [
+            StudentLoginScreen(),
+            AdminLoginScreen(),
+          ]),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
