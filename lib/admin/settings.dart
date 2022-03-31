@@ -1,52 +1,30 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_project/main.dart';
 import 'package:flutter_project/services/toaster.dart';
 import 'package:flutter_project/styles/styles.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class Admin {
-  late int id;
-  late String email;
-  late String password;
-
-  Admin(int id, String email, String password) {
-    this.id = id;
-    this.email = email;
-    this.password = password;
-  }
+class InstellingenScreen extends StatefulWidget {
+  const InstellingenScreen({Key? key}) : super(key: key);
 
   @override
-  String toString() {
-    return '{id: $id, name: $email, password: $password }';
-  }
+  _InstellingenScreenState createState() => _InstellingenScreenState();
 }
 
-class AdminLoginScreen extends StatefulWidget {
-  const AdminLoginScreen({Key? key}) : super(key: key);
-
-  @override
-  _AdminLoginScreenState createState() => _AdminLoginScreenState();
-}
-
-class _AdminLoginScreenState extends State<AdminLoginScreen> {
-  final emailController = TextEditingController();
+class _InstellingenScreenState extends State<InstellingenScreen> {
   final passwordController = TextEditingController();
   bool isButtonDisabled = true;
 
   @override
   void dispose() {
-    emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
   void onValueChange() {
     setState(() {
-      emailController.text;
       passwordController.text;
-      if (emailController.text.length > 3 &&
-          passwordController.text.length > 3) {
+      if (passwordController.text.length >= 6) {
         isButtonDisabled = false;
       }
     });
@@ -55,7 +33,6 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
   @override
   void initState() {
     super.initState();
-    emailController.addListener(onValueChange);
     passwordController.addListener(onValueChange);
   }
 
@@ -65,7 +42,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        padding: const EdgeInsets.fromLTRB(30.0, 45.0, 30.0, 30.0),
+        padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
         child: Align(
           alignment: Alignment.topLeft,
           child: ListView(
@@ -73,16 +50,36 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               Container(
                 width: double.infinity,
                 child: Text(
-                  "Hallo, admin",
+                  "Instellingen",
                   style: Styles.headerStyleH1,
                 ),
               ),
+              const SizedBox(height: 10.0),
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                child: const Text(
-                  "Vul hieronder je inloggegevens in om door te gaan.",
-                  style: TextStyle(fontSize: 16),
+                child: RichText(
+                  text: TextSpan(
+                    style: Styles.textColorBlack,
+                    children: <TextSpan>[
+                      const TextSpan(text: "Ingelogd als "),
+                      TextSpan(
+                          text: FirebaseAuth.instance.currentUser!.email!,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10.0),
+              Divider(
+                color: Colors.grey.shade400,
+                thickness: 1,
+              ),
+              const SizedBox(height: 20.0),
+              Container(
+                width: double.infinity,
+                child: Text(
+                  "Vul hieronder je nieuwe wachtwoord in",
+                  style: Styles.textColorBlack,
                 ),
               ),
               Container(
@@ -90,30 +87,23 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                 child: Column(
                   children: <Widget>[
                     TextFormField(
-                      controller: emailController,
-                      style: const TextStyle(fontSize: 20),
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "email@test.com",
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
                       controller: passwordController,
                       obscureText: true,
                       style: const TextStyle(fontSize: 20),
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: "password",
+                        hintText: "Nieuw wachtwoord",
+                        helperText:
+                            "Wachtwoord moet langer zijn dan of 6 karakter bevatten.",
                       ),
                     ),
                     const SizedBox(height: 20.0),
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-                          onPressed: isButtonDisabled ? null : () => signIn(),
+                          onPressed:
+                              isButtonDisabled ? null : () => changePassword(),
                           style: ButtonStyle(
                             textStyle: MaterialStateProperty.all(
                               const TextStyle(
@@ -121,10 +111,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            minimumSize:
-                                MaterialStateProperty.all(const Size(double.infinity, 65)),
+                            minimumSize: MaterialStateProperty.all(
+                                const Size(double.infinity, 65)),
                           ),
-                          child: Text("Inloggen".toUpperCase())),
+                          child: Text("Opslaan".toUpperCase())),
                     ),
                   ],
                 ),
@@ -136,11 +126,15 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     );
   }
 
-  Future signIn() async {
+  Future changePassword() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim().toString(),
-        password: passwordController.text.trim().toString(),
+      await FirebaseAuth.instance.currentUser!.updatePassword(passwordController.text.trim().toString()).whenComplete(
+        () async => {
+          Toaster().showToastMsg("Wachtwoord opgeslagen"),
+          await FirebaseAuth.instance.signOut().whenComplete(
+            () => Toaster().showToastMsg("Gelieve opnieuw in te loggen")
+          ),
+        }
       );
     } on FirebaseAuthException catch (e) {
       Toaster().showToastMsg(e.message);
