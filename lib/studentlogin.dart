@@ -61,7 +61,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
         padding: const EdgeInsets.fromLTRB(30.0, 45.0, 30.0, 30.0),
         child: Align(
           alignment: Alignment.topLeft,
-          child: Column(
+          child: ListView(
             children: [
               Container(
                 width: double.infinity,
@@ -114,7 +114,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                               ),
                             ),
                             minimumSize:
-                                MaterialStateProperty.all(const Size(250, 65)),
+                                MaterialStateProperty.all(const Size(double.infinity, 65)),
                           ),
                           child: Text("Naar examen".toUpperCase())),
                     ),
