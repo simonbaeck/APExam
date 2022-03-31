@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "891983989965",
+    "project_id": "flutterintromobile",
+    "storage_bucket": "flutterintromobile.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891983989965:android:aa777fe2b47a571aa8ed84",
+        "android_client_info": {
+          "package_name": "edu.ap.flutterproject.flutter_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "891983989965-1enujkqd1filoa13p6n93sdp8saipa89.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAjeTkQL1LdJPCU6j283Xu9LsOtoxvJuB4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "891983989965-1enujkqd1filoa13p6n93sdp8saipa89.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
