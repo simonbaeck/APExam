@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/admin/examens.dart';
-import 'package:flutter_project/admin/settings.dart';
-import 'package:flutter_project/admin/studenten.dart';
+import 'package:flutter_project/admin/examens/examens.dart';
+import 'package:flutter_project/admin/instellingen/instellingen.dart';
+import 'package:flutter_project/admin/studenten/studenten.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:google_fonts/google_fonts.dart';
 
