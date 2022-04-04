@@ -1,10 +1,10 @@
 class Student {
-  String id;
-  final String firstname;
-  final String lastname;
-  final String snumber;
+  late String id;
+  late String firstname;
+  late String lastname;
+  late String snumber;
 
-  Student(this.id, this.firstname, this.lastname, this.snumber);
+  // Student(this.id, this.firstname, this.lastname, this.snumber);
 
   @override
   String toString() {

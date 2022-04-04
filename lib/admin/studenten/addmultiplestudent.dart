@@ -8,16 +8,15 @@ import 'package:flutter_project/admin/studenten/student.class.dart';
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 
-class AddStudent extends StatefulWidget {
-  const AddStudent({Key? key}) : super(key: key);
+class AddMultipleStudent extends StatefulWidget {
+  const AddMultipleStudent({Key? key}) : super(key: key);
 
   @override
-  State<AddStudent> createState() => _AddStudentState();
+  State<AddMultipleStudent> createState() => _AddMultipleStudentState();
 }
 
-class _AddStudentState extends State<AddStudent> {
-  final nameController = TextEditingController();
-  final snumController = TextEditingController();
+class _AddMultipleStudentState extends State<AddMultipleStudent> {
+  final csvInputController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +33,7 @@ class _AddStudentState extends State<AddStudent> {
               Container(
                 width: double.infinity,
                 child: Text(
-                  "Student toevoegen",
+                  "Voeg meerdere studenten toe",
                   style: Styles.headerStyleH1,
                 ),
               ),
@@ -45,36 +44,28 @@ class _AddStudentState extends State<AddStudent> {
                     Container(
                       width: double.infinity,
                       child: Text(
-                        "Vul hieronder de naam van de student in",
+                        "Plak hieronder de inhoud van het CSV bestand.",
                         style: Styles.textColorBlack,
                       ),
                     ),
-                    const SizedBox(height: 20.0),
-                    TextFormField(
-                      controller: nameController,
-                      style: const TextStyle(fontSize: 20),
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "Voornaam Achternaam",
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 10.0),
                     Container(
                       width: double.infinity,
                       child: Text(
-                        "Vul hieronder het s-nummer van de student in",
+                        "Formaat: <voornaam>,<achternaam>,<snummer>",
                         style: Styles.textColorBlack,
                       ),
                     ),
                     const SizedBox(height: 20.0),
-                    TextFormField(
-                      controller: snumController,
-                      style: const TextStyle(fontSize: 20),
-                      keyboardType: TextInputType.text,
+                    TextField(
+                      controller: csvInputController,
+                      keyboardType: TextInputType.multiline,
+                      style: const TextStyle(fontSize: 20, height: 1.35),
+                      maxLines: null,
+                      minLines: 5,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: "s122823",
+                        hintText: "john,doe,s569874,anna,bolen,s897456",
                       ),
                     ),
                     const SizedBox(height: 20.0),
@@ -82,9 +73,8 @@ class _AddStudentState extends State<AddStudent> {
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
                           onPressed: () {
-                            final name = nameController.text;
-                            final snum = snumController.text;
-                            addStudent(inpName: name, inpSnum: snum);
+                            final csv = csvInputController.text;
+                            addStudents(inpCsv: csv);
                           },
                           style: ButtonStyle(
                             textStyle: MaterialStateProperty.all(
@@ -108,18 +98,56 @@ class _AddStudentState extends State<AddStudent> {
     );
   }
 
-  Future addStudent({required String inpName, required String inpSnum}) async {
-    final docStudent = FirebaseFirestore.instance.collection('studenten').doc();
-    final splitName = inpName.split(' ');
-    final Student student = Student();
-    student.id = docStudent.id;
-    student.firstname = splitName[0];
-    student.lastname = splitName[1];
-    student.snumber = inpSnum;
+  Future addStudents({required String inpCsv}) async {
+    List<List<String>> studentList = [];
+    int counter1 = 0;
+    List<String> temp = [];
+    inpCsv.replaceAll("\n", ",").split(',').asMap().forEach((index, value) {
+      temp.add(value);
+      counter1++;
+      if (counter1 == 3) {
+        studentList.add(temp);
+        temp = [];
+        counter1 = 0;
+      }
+    });
 
-    await docStudent.set(student.toMap()).then((res) {
-      Toaster().showToastMsg("Student toegevoegd");
-      Navigator.of(context).pop();
+    int counter2 = 0;
+    studentList.asMap().forEach((index, item) {
+      final docStudent = FirebaseFirestore.instance.collection('studenten').doc();
+      Student student = Student();
+      student.id = docStudent.id;
+      student.firstname = item[0];
+      student.lastname = item[1];
+      student.snumber = item[2];
+      docStudent.set(student.toMap()).whenComplete(() {
+        student = Student();
+        counter2++;
+        if (counter2 == studentList.length) {
+          Toaster().showToastMsg("${studentList.length} studenten toegevoegd");
+          counter2 = 0;
+          studentList = [];
+          Navigator.of(context).pop();
+        }
+      });
     });
   }
 }
+
+/*
+John,Doe,s111111
+Edward,Delacerda,s469521
+William,Cooper,s746931
+Stephen,Morgan,s367491
+Kevin,Carver,s851379
+Hazel,Bailey,s761349
+Donald,Beebe,s713982
+Michael,Huynh,s766954
+Virginia,Wan,s897461
+John,Rutledge,s482615
+Muriel,Butner,s763149
+Arthur,Zambrano,s886314
+Susan,Smith,s773199
+Jessica,Riggins,s615524
+Martha,Barnette,s966351
+*/
