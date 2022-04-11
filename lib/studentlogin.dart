@@ -35,6 +35,8 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       _snController.text;
       if (_snController.text.length == 6) {
         _isButtonDisabled = false;
+      } else if (_snController.text.length < 6) {
+        _isButtonDisabled = true;
       }
     });
   }
@@ -51,6 +53,17 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
     super.initState();
     _snController.addListener(onValueChange);
   }
+
+  List<DropdownMenuItem<String>> get dropdownItems{
+    List<DropdownMenuItem<String>> menuItems = [
+      const DropdownMenuItem(child: Text("s122823 [Simon Baeck]"),value: "s122823"),
+      const DropdownMenuItem(child: Text("s256789 [Siemen Slabbinck]"),value: "s256789"),
+      const DropdownMenuItem(child: Text("s546924 [Oulad Ali Aïman]"),value: "s546924"),
+    ];
+    return menuItems;
+  }
+
+  String? selectedValue = null;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +95,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
                 child: Column(
                   children: <Widget>[
-                    TextFormField(
+                    /*TextFormField(
                       controller: _snController,
                       style: const TextStyle(fontSize: 20),
                       keyboardType: TextInputType.number,
@@ -99,6 +112,19 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                         counterText:
                             "${6 - _snController.text.length} character left",
                       ),
+                    ),*/
+                    DropdownButtonFormField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        filled: false,
+                      ),
+                      items: dropdownItems, 
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedValue = newValue!;
+                        });
+                      },
+                      value: selectedValue,
                     ),
                     const SizedBox(height: 20.0),
                     Container(
