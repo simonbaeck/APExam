@@ -1,7 +1,9 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_project/services/loadingscreen.dart';
 import 'package:flutter_project/styles/styles.dart';
 
 class Student {
@@ -27,43 +29,12 @@ class StudentLoginScreen extends StatefulWidget {
 }
 
 class _StudentLoginScreenState extends State<StudentLoginScreen> {
-  final TextEditingController _snController = TextEditingController();
   bool _isButtonDisabled = true;
+  String? selectedValue;
 
-  void onValueChange() {
-    setState(() {
-      _snController.text;
-      if (_snController.text.length == 6) {
-        _isButtonDisabled = false;
-      } else if (_snController.text.length < 6) {
-        _isButtonDisabled = true;
-      }
-    });
+  printObj() {
+    print(selectedValue);
   }
-
-  printObj() async {
-    Student temp = Student(1, "s" + _snController.text);
-    print(temp);
-    _snController.text = "";
-    _isButtonDisabled = true;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _snController.addListener(onValueChange);
-  }
-
-  List<DropdownMenuItem<String>> get dropdownItems{
-    List<DropdownMenuItem<String>> menuItems = [
-      const DropdownMenuItem(child: Text("s122823 [Simon Baeck]"),value: "s122823"),
-      const DropdownMenuItem(child: Text("s256789 [Siemen Slabbinck]"),value: "s256789"),
-      const DropdownMenuItem(child: Text("s546924 [Oulad Ali Aïman]"),value: "s546924"),
-    ];
-    return menuItems;
-  }
-
-  String? selectedValue = null;
 
   @override
   Widget build(BuildContext context) {
@@ -95,54 +66,51 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
                 child: Column(
                   children: <Widget>[
-                    /*TextFormField(
-                      controller: _snController,
-                      style: const TextStyle(fontSize: 20),
-                      keyboardType: TextInputType.number,
-                      maxLength: 6,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        prefix: const Text("s"),
-                        hintText: "748596",
-                        helperText:
-                            "s-nummer kan je vinden op je studentenkaart.",
-                        counterText:
-                            "${6 - _snController.text.length} character left",
-                      ),
-                    ),*/
-                    DropdownButtonFormField(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        filled: false,
-                      ),
-                      items: dropdownItems, 
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedValue = newValue!;
-                        });
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance.collection('studenten').snapshots(),
+                      builder: (context, snapshot) {
+                        if (!snapshot.hasData) {
+                          _isButtonDisabled = true;
+                          return const CircularProgressIndicator();
+                        } else {
+                          return DropdownButtonFormField(
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              filled: false,
+                            ),
+                            items: snapshot.data?.docs.map((student) {
+                              return DropdownMenuItem(
+                                child: Text("${student.get('snumber')} [${student.get('firstname')} ${student.get('lastname')}]"),
+                                value: student.get('snumber'),
+                              );
+                            }).toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                selectedValue = value.toString();
+                                _isButtonDisabled = false;
+                              });
+                            },
+                            value: selectedValue,
+                          );
+                        }
                       },
-                      value: selectedValue,
                     ),
                     const SizedBox(height: 20.0),
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-                          onPressed:
-                              _isButtonDisabled ? null : () => printObj(),
-                          style: ButtonStyle(
-                            textStyle: MaterialStateProperty.all(
-                              const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        onPressed: _isButtonDisabled ? null : () => printObj(),
+                        style: ButtonStyle(
+                          textStyle: MaterialStateProperty.all(
+                            const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            minimumSize:
-                                MaterialStateProperty.all(const Size(double.infinity, 65)),
                           ),
-                          child: Text("Naar examen".toUpperCase())),
+                          minimumSize:
+                              MaterialStateProperty.all(const Size(double.infinity, 65)),
+                        ),
+                        child: Text("Naar examen".toUpperCase())),
                     ),
                   ],
                 ),
