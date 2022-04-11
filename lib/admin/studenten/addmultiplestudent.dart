@@ -22,77 +22,73 @@ class _AddMultipleStudentState extends State<AddMultipleStudent> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        padding: const EdgeInsets.fromLTRB(30.0, 45.0, 30.0, 30.0),
-        child: Align(
-          alignment: Alignment.topLeft,
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                child: Text(
-                  "Voeg meerdere studenten toe",
-                  style: Styles.headerStyleH1,
-                ),
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              child: Text(
+                "Voeg meerdere studenten toe",
+                style: Styles.headerStyleH1,
               ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-                child: Column(
-                  children: <Widget>[
-                    Container(
-                      width: double.infinity,
-                      child: Text(
-                        "Plak hieronder de inhoud van het CSV bestand.",
-                        style: Styles.textColorBlack,
-                      ),
+            ),
+            Container(
+              margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    width: double.infinity,
+                    child: Text(
+                      "Plak hieronder de inhoud van het CSV bestand.",
+                      style: Styles.textColorBlack,
                     ),
-                    const SizedBox(height: 10.0),
-                    Container(
-                      width: double.infinity,
-                      child: Text(
-                        "Formaat: <voornaam>,<achternaam>,<snummer>",
-                        style: Styles.textColorBlack,
-                      ),
+                  ),
+                  const SizedBox(height: 10.0),
+                  Container(
+                    width: double.infinity,
+                    child: Text(
+                      "Formaat: <voornaam>,<achternaam>,<snummer>",
+                      style: Styles.textColorBlack,
                     ),
-                    const SizedBox(height: 20.0),
-                    TextField(
-                      controller: csvInputController,
-                      keyboardType: TextInputType.multiline,
-                      style: const TextStyle(fontSize: 20, height: 1.35),
-                      maxLines: null,
-                      minLines: 5,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "john,doe,s569874,anna,bolen,s897456",
-                      ),
+                  ),
+                  const SizedBox(height: 20.0),
+                  TextField(
+                    controller: csvInputController,
+                    keyboardType: TextInputType.multiline,
+                    style: const TextStyle(fontSize: 20, height: 1.35),
+                    maxLines: null,
+                    minLines: 5,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: "john,doe,s569874,anna,bolen,s897456",
                     ),
-                    const SizedBox(height: 20.0),
-                    Container(
-                      alignment: Alignment.topLeft,
-                      child: ElevatedButton(
-                          onPressed: () {
-                            final csv = csvInputController.text;
-                            addStudents(inpCsv: csv);
-                          },
-                          style: ButtonStyle(
-                            textStyle: MaterialStateProperty.all(
-                              const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                  ),
+                  const SizedBox(height: 20.0),
+                  Container(
+                    alignment: Alignment.topLeft,
+                    child: ElevatedButton(
+                        onPressed: () {
+                          final csv = csvInputController.text;
+                          addStudents(inpCsv: csv);
+                        },
+                        style: ButtonStyle(
+                          textStyle: MaterialStateProperty.all(
+                            const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            minimumSize:
-                            MaterialStateProperty.all(const Size(double.infinity, 65)),
                           ),
-                          child: Text("toevoegen".toUpperCase())),
-                    ),
-                  ],
-                ),
+                          minimumSize:
+                          MaterialStateProperty.all(const Size(double.infinity, 65)),
+                        ),
+                        child: Text("toevoegen".toUpperCase())),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

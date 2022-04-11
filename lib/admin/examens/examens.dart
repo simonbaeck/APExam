@@ -36,7 +36,7 @@ class _ExamensScreenState extends State<ExamensScreen> {
       floatingActionButton: SpeedDial(
         icon: Icons.add,
         activeIcon: Icons.close,
-        backgroundColor: Styles.APred,
+        backgroundColor: Styles.APred[900],
         overlayColor: Colors.black,
         overlayOpacity: 0.4,
         spacing: 10,

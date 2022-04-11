@@ -98,7 +98,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                         hintText: "email@test.com",
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 10.0),
                     TextFormField(
                       controller: passwordController,
                       obscureText: true,
