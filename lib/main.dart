@@ -4,9 +4,11 @@ import 'dart:js_util';
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_project/admin/admindashboard.dart';
-import 'package:flutter_project/adminlogin.dart';
+import 'package:flutter_project/admin/adminlogin.dart';
+import 'package:flutter_project/homepage.dart';
+import 'package:flutter_project/services/loadingscreen.dart';
 import 'package:flutter_project/studentlogin.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -15,6 +17,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: "AIzaSyA0yM2tB_DVxQ1a4cuSe9P1l5izd0qqbvY",
@@ -22,7 +25,7 @@ void main() async {
       messagingSenderId: "2876530414531507255",
       projectId: "flutterintromobile",
     ),
-  );
+  ).whenComplete(() => FlutterNativeSplash.remove());
 
   runApp(const MyApp());
 }
@@ -51,64 +54,23 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-enum AuthState { notSignedIn, signedIn }
-
 class _MyHomePageState extends State<MyHomePage> {
-  int _selectedIndex = 0;
-  PageController pageController = PageController();
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    pageController.animateToPage(index,
-        duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<User?>(
-          stream: FirebaseAuth.instance.authStateChanges(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return AdminDasboard();
-            } else {
-              return Scaffold(
-                body: PageView(
-                  allowImplicitScrolling: true,
-                  controller: pageController,
-                  onPageChanged: (page) {
-                    setState(() {
-                      _selectedIndex = page;
-                    });
-                  },
-                  children: const [
-                    StudentLoginScreen(),
-                    AdminLoginScreen(),
-                  ]),
-                bottomNavigationBar: BottomNavigationBar(
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.person),
-                      label: 'Student',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.person),
-                      label: 'Admin',
-                    ),
-                  ],
-                  currentIndex: _selectedIndex,
-                  onTap: _onItemTapped,
-                ),
-              );
-            }
-          }),
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingScreen();
+          }
+
+          if (snapshot.hasData) {
+            return const AdminDasboard();
+          } else {
+            return const Homepage();
+          }
+        }),
     );
   }
 }
