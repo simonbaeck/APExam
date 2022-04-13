@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_project/admin/examens/addmultiplechoise.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'addmultiplechoise.dart';
 
 class ExamensScreen extends StatefulWidget {
   const ExamensScreen({Key? key}) : super(key: key);
@@ -10,7 +12,6 @@ class ExamensScreen extends StatefulWidget {
 }
 
 class _ExamensScreenState extends State<ExamensScreen> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,10 +44,16 @@ class _ExamensScreenState extends State<ExamensScreen> {
         spaceBetweenChildren: 10,
         children: [
           SpeedDialChild(
-            child: const Icon(Icons.add_task_rounded, color: Colors.white),
-            backgroundColor: Styles.APred,
-            label: "Mulitple choice vraag",
-          ),
+              child: const Icon(Icons.add_task_rounded, color: Colors.white),
+              backgroundColor: Styles.APred,
+              label: "Mulitple choice vraag",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddMultplechoice()),
+                );
+              }),
           SpeedDialChild(
             child: const Icon(Icons.add_task_rounded, color: Colors.white),
             backgroundColor: Styles.APred,
