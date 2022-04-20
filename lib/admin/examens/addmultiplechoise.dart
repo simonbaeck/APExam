@@ -87,7 +87,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "s122823",
+                      hintText: "Kies hier een oplossing",
                     ),
                   ),
                   const SizedBox(height: 20.0),
@@ -114,7 +114,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                           minimumSize: MaterialStateProperty.all(
                               const Size(double.infinity, 65)),
                         ),
-                        child: Text("toevoegen".toUpperCase())),
+                        child: Text("Vraag toevoegen".toUpperCase())),
                   ),
                 ],
               ),
