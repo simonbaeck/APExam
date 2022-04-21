@@ -7,17 +7,15 @@ import 'package:flutter_project/admin/studenten/student.class.dart';
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 
-class AddMultplechoice extends StatefulWidget {
-  const AddMultplechoice({Key? key}) : super(key: key);
+class AddOpenvraag extends StatefulWidget {
+  const AddOpenvraag({Key? key}) : super(key: key);
 
   @override
-  State<AddMultplechoice> createState() => _AddMultplechoice();
+  State<AddOpenvraag> createState() => _AddOpenvraag();
 }
 
-class _AddMultplechoice extends State<AddMultplechoice> {
+class _AddOpenvraag extends State<AddOpenvraag> {
   final vraagController = TextEditingController();
-  final antwoordController = TextEditingController();
-  final oplossingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +28,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
             Container(
               width: double.infinity,
               child: Text(
-                "Multiple choise vraag toevoegen",
+                "Open vraag toevoegen",
                 style: Styles.headerStyleH1,
               ),
             ),
@@ -56,49 +54,13 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                     ),
                   ),
                   const SizedBox(height: 20.0),
-                  Container(
-                    width: double.infinity,
-                    child: Text(
-                      "Antwoorden:",
-                      style: Styles.textColorBlack,
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-                  TextFormField(
-                    controller: antwoordController,
-                    style: const TextStyle(fontSize: 20),
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Antwoorden moeten gescheiden zijn door ,",
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-                  Container(
-                    width: double.infinity,
-                    child: Text(
-                      "Oplossingen",
-                      style: Styles.textColorBlack,
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-                  TextFormField(
-                    controller: oplossingController,
-                    style: const TextStyle(fontSize: 20),
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Kies hier een oplossing",
-                    ),
-                  ),
                   const SizedBox(height: 20.0),
                   Container(
                     alignment: Alignment.topLeft,
                     child: ElevatedButton(
                         onPressed: () {
                           final firstname = vraagController.text;
-                          final lastname = antwoordController.text;
-                          final snum = oplossingController.text;
+
                           /*
                           addStudent(
                               inpFirstname: firstname,
