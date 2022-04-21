@@ -57,17 +57,6 @@ class _StudentenScreenState extends State<StudentenScreen> {
                                   leading: CircleAvatar(
                                     backgroundImage: NetworkImage("https://ui-avatars.com/api/?name=${ds['firstname']}+${ds['lastname']}&background=B3161D&color=FFFFFF&font-size=0.4&bold=true"),
                                   ),
-                                  trailing: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      IconButton(
-                                          icon: const Icon(Icons.delete),
-                                          onPressed: (){
-                                            removeStudent(inpId: ds["id"]);
-                                          },
-                                      ),
-                                    ],
-                                  ),
                                 ),
                               ),
                             );
@@ -97,36 +86,41 @@ class _StudentenScreenState extends State<StudentenScreen> {
         overlayOpacity: 0.4,
         spacing: 10,
         spaceBetweenChildren: 10,
+        buttonSize: const Size(90.0, 90.0),
+        childrenButtonSize: const Size(80.0, 80.0),
         children: [
           SpeedDialChild(
-              child: const Icon(Icons.delete, color: Colors.white),
-              backgroundColor: Styles.APred,
-              label: "Verwijder alle studenten",
-              onTap: () {
-                removeStudents();
-              }
+            child: const Icon(Icons.delete, color: Colors.white),
+            backgroundColor: Styles.APred,
+            label: "Verwijder alle studenten",
+            labelStyle: const TextStyle(fontSize: 16.0),
+            onTap: () {
+              removeStudents();
+            }
           ),
           SpeedDialChild(
             child: const Icon(Icons.group_add, color: Colors.white),
             backgroundColor: Styles.APred,
             label: "Voeg meerdere studenten toe",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AddMultipleStudent()),
-                );
-              }
+            labelStyle: const TextStyle(fontSize: 16.0),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddMultipleStudent()),
+              );
+            }
           ),
           SpeedDialChild(
-              child: const Icon(Icons.person_add, color: Colors.white),
-              backgroundColor: Styles.APred,
-              label: "Voeg één student toe",
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AddStudent()),
-                );
-              }
+            child: const Icon(Icons.person_add, color: Colors.white),
+            backgroundColor: Styles.APred,
+            label: "Voeg één student toe",
+            labelStyle: const TextStyle(fontSize: 16.0),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AddStudent()),
+              );
+            }
           ),
         ],
       ),

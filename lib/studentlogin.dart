@@ -56,10 +56,10 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
               ),
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                child: const Text(
+                margin: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+                child: Text(
                   "Vul hieronder je studentennummer in om te starten.",
-                  style: TextStyle(fontSize: 16),
+                  style: Styles.textColorBlack,
                 ),
               ),
               Container(

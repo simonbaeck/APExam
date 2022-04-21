@@ -45,9 +45,11 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     setState(() {
       emailController.text;
       passwordController.text;
-      if (emailController.text.length > 3 &&
-          passwordController.text.length > 3) {
+      if (emailController.text.contains("@") && emailController.text.length >= 6 &&
+          passwordController.text.length >= 6) {
         isButtonDisabled = false;
+      } else {
+        isButtonDisabled = true;
       }
     });
   }
@@ -79,10 +81,10 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               ),
               Container(
                 width: double.infinity,
-                margin: const EdgeInsets.fromLTRB(0.0, 10.0, 0.0, 0.0),
-                child: const Text(
+                margin: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
+                child: Text(
                   "Vul hieronder je inloggegevens in om door te gaan.",
-                  style: TextStyle(fontSize: 16),
+                  style: Styles.textColorBlack
                 ),
               ),
               Container(
