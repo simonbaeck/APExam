@@ -7,17 +7,16 @@ import 'package:flutter_project/admin/studenten/student.class.dart';
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 
-class AddMultplechoice extends StatefulWidget {
-  const AddMultplechoice({Key? key}) : super(key: key);
+class Addcodecorrectie extends StatefulWidget {
+  const Addcodecorrectie({Key? key}) : super(key: key);
 
   @override
-  State<AddMultplechoice> createState() => _AddMultplechoice();
+  State<Addcodecorrectie> createState() => _Addcodecorrectie();
 }
 
-class _AddMultplechoice extends State<AddMultplechoice> {
+class _Addcodecorrectie extends State<Addcodecorrectie> {
   final vraagController = TextEditingController();
   final antwoordController = TextEditingController();
-  final oplossingController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +29,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
             Container(
               width: double.infinity,
               child: Text(
-                "Multiple choise vraag toevoegen",
+                "Code correctie toevoegen",
                 style: Styles.headerStyleH1,
               ),
             ),
@@ -41,7 +40,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                   Container(
                     width: double.infinity,
                     child: Text(
-                      "Vraag:",
+                      "Code vraag:",
                       style: Styles.textColorBlack,
                     ),
                   ),
@@ -52,14 +51,14 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "Kies hier een vraag",
+                      hintText: " ",
                     ),
                   ),
                   const SizedBox(height: 20.0),
                   Container(
                     width: double.infinity,
                     child: Text(
-                      "Antwoorden:",
+                      "Correcte code:",
                       style: Styles.textColorBlack,
                     ),
                   ),
@@ -70,25 +69,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "Antwoorden moeten gescheiden zijn door ,",
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-                  Container(
-                    width: double.infinity,
-                    child: Text(
-                      "Oplossingen",
-                      style: Styles.textColorBlack,
-                    ),
-                  ),
-                  const SizedBox(height: 20.0),
-                  TextFormField(
-                    controller: oplossingController,
-                    style: const TextStyle(fontSize: 20),
-                    keyboardType: TextInputType.text,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: "Kies hier een oplossing",
+                      hintText: " ",
                     ),
                   ),
                   const SizedBox(height: 20.0),
@@ -98,7 +79,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                         onPressed: () {
                           final firstname = vraagController.text;
                           final lastname = antwoordController.text;
-                          final snum = oplossingController.text;
+
                           /*
                           addStudent(
                               inpFirstname: firstname,

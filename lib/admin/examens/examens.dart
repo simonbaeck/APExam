@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/examens/addmultiplechoise.dart';
+import 'package:flutter_project/admin/examens/addopenvraag.dart';
+import 'package:flutter_project/admin/examens/addcodecorrectie.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'addmultiplechoise.dart';
+import 'addopenvraag.dart';
+import 'addcodecorrectie.dart';
 
 class ExamensScreen extends StatefulWidget {
   const ExamensScreen({Key? key}) : super(key: key);
@@ -57,17 +61,26 @@ class _ExamensScreenState extends State<ExamensScreen> {
                 );
               }),
           SpeedDialChild(
-            child: const Icon(Icons.add_task_rounded, color: Colors.white),
-            backgroundColor: Styles.APred,
-            label: "Open vraag",
-            labelStyle: const TextStyle(fontSize: 16.0),
-          ),
+              child: const Icon(Icons.add_task_rounded, color: Colors.white),
+              backgroundColor: Styles.APred,
+              label: "Open vraag",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddOpenvraag()),
+                );
+              }),
           SpeedDialChild(
-            child: const Icon(Icons.add_task_rounded, color: Colors.white),
-            backgroundColor: Styles.APred,
-            label: "Correctie vraag",
-            labelStyle: const TextStyle(fontSize: 16.0),
-          ),
+              child: const Icon(Icons.add_task_rounded, color: Colors.white),
+              backgroundColor: Styles.APred,
+              label: "Correctie vraag",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const Addcodecorrectie()),
+                );
+              }),
         ],
       ),
     );
