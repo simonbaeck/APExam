@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/main.dart';
 import 'package:flutter_project/services/toaster.dart';
@@ -26,6 +27,8 @@ class _InstellingenScreenState extends State<InstellingenScreen> {
       passwordController.text;
       if (passwordController.text.length >= 6) {
         isButtonDisabled = false;
+      } else {
+        isButtonDisabled = true;
       }
     });
   }
@@ -54,7 +57,7 @@ class _InstellingenScreenState extends State<InstellingenScreen> {
                   style: Styles.headerStyleH1,
                 ),
               ),
-              const SizedBox(height: 10.0),
+              const SizedBox(height: 15.0),
               Container(
                 width: double.infinity,
                 child: RichText(
@@ -94,16 +97,25 @@ class _InstellingenScreenState extends State<InstellingenScreen> {
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         hintText: "Nieuw wachtwoord",
-                        helperText:
-                            "Wachtwoord moet langer zijn dan of 6 karakter bevatten.",
+                      ),
+                    ),
+                    const SizedBox(height: 7.5),
+                    Container(
+                      alignment: Alignment.topLeft,
+                      margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                      child: Text(
+                        "Wachtwoord moet langer zijn dan of 6 karakter bevatten.",
+                        style: TextStyle(
+                            color: Colors.grey.shade500,
+                            fontSize: 16.0,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20.0),
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-                          onPressed:
-                              isButtonDisabled ? null : () => changePassword(),
+                          onPressed: isButtonDisabled ? null : () => changePassword(),
                           style: ButtonStyle(
                             textStyle: MaterialStateProperty.all(
                               const TextStyle(

@@ -39,7 +39,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Project',
       theme: ThemeData(
-        fontFamily: GoogleFonts.ubuntu().fontFamily,
+        //fontFamily: GoogleFonts.ubuntu().fontFamily,
+        // textTheme: Theme.of(context).textTheme.apply(
+        //   fontSizeFactor: 1.1,
+        //   fontSizeDelta: 2.0,
+        // ),
         primarySwatch: Styles.APred,
       ),
       home: const MyHomePage(),

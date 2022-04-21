@@ -40,22 +40,27 @@ class _ExamensScreenState extends State<ExamensScreen> {
         overlayColor: Colors.black,
         overlayOpacity: 0.4,
         spacing: 10,
+        buttonSize: const Size(90.0, 90.0),
+        childrenButtonSize: const Size(80.0, 80.0),
         spaceBetweenChildren: 10,
         children: [
           SpeedDialChild(
             child: const Icon(Icons.add_task_rounded, color: Colors.white),
             backgroundColor: Styles.APred,
             label: "Mulitple choice vraag",
+            labelStyle: const TextStyle(fontSize: 16.0),
           ),
           SpeedDialChild(
             child: const Icon(Icons.add_task_rounded, color: Colors.white),
             backgroundColor: Styles.APred,
             label: "Open vraag",
+            labelStyle: const TextStyle(fontSize: 16.0),
           ),
           SpeedDialChild(
             child: const Icon(Icons.add_task_rounded, color: Colors.white),
             backgroundColor: Styles.APred,
             label: "Correctie vraag",
+            labelStyle: const TextStyle(fontSize: 16.0),
           ),
         ],
       ),
