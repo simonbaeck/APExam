@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/admin/examens/openvraag/vraag.class.dart';
 import 'package:flutter_project/admin/studenten/student.class.dart';
+import 'package:flutter_project/admin/examens/multiplechoice/multiplechoise.class.dart';
 import '../../../services/toaster.dart';
 import '../../../styles/styles.dart';
 
@@ -70,7 +72,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "Antwoorden moeten gescheiden zijn door ,",
+                      hintText: "Antwoorden moeten gescheiden zijn door een ;",
                     ),
                   ),
                   const SizedBox(height: 20.0),
@@ -96,14 +98,16 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                     alignment: Alignment.topLeft,
                     child: ElevatedButton(
                         onPressed: () {
-                          final firstname = vraagController.text;
-                          final lastname = antwoordController.text;
-                          final snum = oplossingController.text;
-                          /*
-                          addStudent(
-                              inpFirstname: firstname,
-                              inpLastname: lastname,
-                              inpSnum: snum);*/
+                          final vraag = vraagController.text;
+                          final antwoord = antwoordController.text.split(";");
+                          final oplossing = oplossingController.text;
+
+                          addmuliplechoice(
+                              inpOpgave: vraag,
+                              inpOplossing: oplossing,
+                              inpAntwoord: antwoord);
+                          //antwoordController.text.split(";");
+                          //print(antwoordController.text.split(";"));
                         },
                         style: ButtonStyle(
                           textStyle: MaterialStateProperty.all(
@@ -125,16 +129,21 @@ class _AddMultplechoice extends State<AddMultplechoice> {
       ),
     );
   }
-/*
-  Future addStudent(
-      {required String inpFirstname,
-      required String inpLastname,
-      required String inpSnum}) async {
-    final docStudent = FirebaseFirestore.instance.collection('studenten').doc();
-    final Student student = Student();
-    student.id = docStudent.id;
-    student.firstname = inpFirstname;
-    student.lastname = inpLastname;
-    student.snumber = inpSnum;
-  }*/
+
+  Future addmuliplechoice(
+      {required String inpOpgave,
+      required String inpOplossing,
+      required List<String> inpAntwoord}) async {
+    final docVraag = FirebaseFirestore.instance.collection("vragen").doc();
+    final Multipechoice multipechoice = Multipechoice();
+    multipechoice.id = docVraag.id;
+    multipechoice.opgave = inpOpgave;
+    multipechoice.oplossing = inpOplossing;
+    multipechoice.antwoorden = inpAntwoord;
+
+    await docVraag.set(multipechoice.toMap()).then((res) {
+      Toaster().showToastMsg("vraag toegevoegd");
+      Navigator.of(context).pop();
+    });
+  }
 }

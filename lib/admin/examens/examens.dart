@@ -63,6 +63,7 @@ class _ExamensScreenState extends State<ExamensScreen> {
                                   },
                                   child: Card(
                                     child: ListTile(
+                                      subtitle: Text("Open vraag"),
                                       title: Text("${ds["vraag"]}"),
                                       trailing: Row(
                                         mainAxisSize: MainAxisSize.min,
