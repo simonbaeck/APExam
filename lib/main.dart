@@ -1,6 +1,4 @@
 import 'dart:developer';
-import 'dart:html' as Html;
-import 'dart:js_util';
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
