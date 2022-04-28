@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project/admin/examens/addmultiplechoise.dart';
+import 'package:flutter_project/admin/examens/multiplechoice/addmultiplechoise.dart';
 import 'package:flutter_project/admin/examens/openvraag/addopenvraag.dart';
-import 'package:flutter_project/admin/examens/addcodecorrectie.dart';
-import 'package:flutter_project/admin/examens/openvraag/vraagdetail.dart';
+import 'package:flutter_project/admin/examens/codecorrectie/addcodecorrectie.dart';
+import 'package:flutter_project/admin/examens/vraagdetail.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'addmultiplechoise.dart';
+import 'multiplechoice/addmultiplechoise.dart';
 import 'openvraag/addopenvraag.dart';
-import 'addcodecorrectie.dart';
+import 'codecorrectie/addcodecorrectie.dart';
 
 class ExamensScreen extends StatefulWidget {
   const ExamensScreen({Key? key}) : super(key: key);
@@ -29,6 +29,8 @@ class _ExamensScreenState extends State<ExamensScreen> {
           alignment: Alignment.topLeft,
           child: Column(
             children: [
+              /*Open vraag*/
+
               StreamBuilder<QuerySnapshot>(
                 stream:
                     FirebaseFirestore.instance.collection('vragen').snapshots(),
@@ -92,7 +94,73 @@ class _ExamensScreenState extends State<ExamensScreen> {
                   }
                 },
               ),
+              /*Code correctie*/
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("codecorrectie")
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text("Error");
+                  } else if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return snapshot.data!.docs.isNotEmpty
+                        ? Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(
+                                  26.0, 30.0, 26.0, 30.0),
+                              shrinkWrap: true,
+                              controller: ScrollController(),
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot ds =
+                                    snapshot.data!.docs[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              VraagDetail(vraag: ds)),
+                                    );
+                                  },
+                                  child: Card(
+                                    child: ListTile(
+                                      title: Text("${ds["vraag"]}"),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          IconButton(
+                                            icon: const Icon(Icons.delete),
+                                            onPressed: () {
+                                              //removeStudent(inpId: ds["id"]);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : Container(
+                            padding: const EdgeInsets.fromLTRB(
+                                26.0, 30.0, 26.0, 30.0),
+                            child: const Card(
+                              child: ListTile(
+                                title: Text("Er zijn nog geen vragen"),
+                                subtitle: Text(
+                                    "Klik rechtsonder op het + icoontje om vragen toe te voegen."),
+                              ),
+                            ),
+                          );
+                  }
+                },
+              ),
             ],
+            /*Code correctie*/
           ),
         ),
       ),
