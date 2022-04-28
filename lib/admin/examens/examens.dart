@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/examens/addmultiplechoise.dart';
 import 'package:flutter_project/admin/examens/addopenvraag.dart';
 import 'package:flutter_project/admin/examens/addcodecorrectie.dart';
+import 'package:flutter_project/admin/examens/vraagdetail.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'addmultiplechoise.dart';
 import 'addopenvraag.dart';
 import 'addcodecorrectie.dart';
@@ -27,12 +29,45 @@ class _ExamensScreenState extends State<ExamensScreen> {
           alignment: Alignment.topLeft,
           child: Column(
             children: [
-              Container(
-                width: double.infinity,
-                child: Text(
-                  "Examens",
-                  style: Styles.headerStyleH1,
-                ),
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('vragen')
+                    .orderBy('nummer', descending: false)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text("Error");
+                  } else if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return snapshot.data!.docs.isNotEmpty
+                        ? Expanded(
+                            child: ListView.builder(
+                            itemCount: snapshot.data!.docs.length,
+                            itemBuilder: (context, index) {
+                              DocumentSnapshot ds = snapshot.data!.docs[index];
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => VraagDetail(
+                                              vraag: ds,
+                                            )),
+                                  );
+                                },
+                              );
+                            },
+                          ))
+                        : Container(
+                            width: double.infinity,
+                            child: Text(
+                              "Examens",
+                              style: Styles.headerStyleH1,
+                            ),
+                          );
+                  }
+                },
               ),
             ],
           ),
