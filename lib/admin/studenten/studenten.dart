@@ -110,6 +110,8 @@ class _StudentenScreenState extends State<StudentenScreen> {
         overlayOpacity: 0.4,
         spacing: 10,
         spaceBetweenChildren: 10,
+        buttonSize: const Size(90.0, 90.0),
+        childrenButtonSize: const Size(80.0, 80.0),
         children: [
           SpeedDialChild(
               child: const Icon(Icons.delete, color: Colors.white),

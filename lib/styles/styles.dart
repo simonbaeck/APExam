@@ -4,17 +4,17 @@ import 'package:google_fonts/google_fonts.dart';
 
 class Styles {
   // Text styles
-  static TextStyle headerStyleH1 = GoogleFonts.baloo2(
+  static TextStyle headerStyleH1 = GoogleFonts.ubuntu(
     textStyle: const TextStyle(
       fontWeight: FontWeight.bold,
       fontSize: 28,
     ),
   );
 
-  static TextStyle textColorBlack = TextStyle(
+  static TextStyle textColorBlack = const TextStyle(
     color: Colors.black,
-    fontFamily: GoogleFonts.ubuntu().fontFamily,
-    fontSize: 16,
+    // fontFamily: GoogleFonts.ubuntu().fontFamily,
+    fontSize: 18,
   );
 
   // Colors

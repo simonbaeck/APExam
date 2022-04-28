@@ -175,6 +175,8 @@ class _ExamensScreenState extends State<ExamensScreen> {
         overlayColor: Colors.black,
         overlayOpacity: 0.4,
         spacing: 10,
+        buttonSize: const Size(90.0, 90.0),
+        childrenButtonSize: const Size(80.0, 80.0),
         spaceBetweenChildren: 10,
         children: [
           SpeedDialChild(
