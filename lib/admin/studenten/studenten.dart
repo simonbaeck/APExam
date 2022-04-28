@@ -28,49 +28,73 @@ class _StudentenScreenState extends State<StudentenScreen> {
           child: Column(
             children: [
               StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('studenten').orderBy('firstname', descending: false).snapshots(),
+                stream: FirebaseFirestore.instance
+                    .collection('studenten')
+                    .orderBy('firstname', descending: false)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return const Text("Error");
                   } else if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   } else {
-                    return snapshot.data!.docs.isNotEmpty ? Expanded(
-                        child: ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
-                          shrinkWrap: true,
-                          controller: ScrollController(),
-                          itemCount: snapshot.data!.docs.length,
-                          itemBuilder: (context, index) {
-                            DocumentSnapshot ds = snapshot.data!.docs[index];
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => StudentDetail(student: ds)),
+                    return snapshot.data!.docs.isNotEmpty
+                        ? Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(
+                                  26.0, 30.0, 26.0, 30.0),
+                              shrinkWrap: true,
+                              controller: ScrollController(),
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot ds =
+                                    snapshot.data!.docs[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              StudentDetail(student: ds)),
+                                    );
+                                  },
+                                  child: Card(
+                                    child: ListTile(
+                                      title: Text(
+                                          "${ds["firstname"]} ${ds['lastname']}"),
+                                      subtitle: Text("${ds['snumber']}"),
+                                      leading: CircleAvatar(
+                                        backgroundImage: NetworkImage(
+                                            "https://ui-avatars.com/api/?name=${ds['firstname']}+${ds['lastname']}&background=B3161D&color=FFFFFF&font-size=0.4&bold=true"),
+                                      ),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          IconButton(
+                                            icon: const Icon(Icons.delete),
+                                            onPressed: () {
+                                              removeStudent(inpId: ds["id"]);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
                                 );
                               },
-                              child: Card(
-                                child: ListTile(
-                                  title: Text("${ds["firstname"]} ${ds['lastname']}"),
-                                  subtitle: Text("${ds['snumber']}"),
-                                  leading: CircleAvatar(
-                                    backgroundImage: NetworkImage("https://ui-avatars.com/api/?name=${ds['firstname']}+${ds['lastname']}&background=B3161D&color=FFFFFF&font-size=0.4&bold=true"),
-                                  ),
-                                ),
+                            ),
+                          )
+                        : Container(
+                            padding: const EdgeInsets.fromLTRB(
+                                26.0, 30.0, 26.0, 30.0),
+                            child: const Card(
+                              child: ListTile(
+                                title: Text("Er zijn geen studenten aanwezig"),
+                                subtitle: Text(
+                                    "Klik rechtsonder op het + icoontje om studenten toe te voegen."),
                               ),
-                            );
-                          },
-                        ),
-                    ) : Container(
-                      padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
-                      child: const Card(
-                        child: ListTile(
-                          title: Text("Er zijn geen studenten aanwezig"),
-                          subtitle: Text("Klik rechtsonder op het + icoontje om studenten toe te voegen."),
-                        ),
-                      ),
-                    );
+                            ),
+                          );
                   }
                 },
               ),
@@ -90,38 +114,33 @@ class _StudentenScreenState extends State<StudentenScreen> {
         childrenButtonSize: const Size(80.0, 80.0),
         children: [
           SpeedDialChild(
-            child: const Icon(Icons.delete, color: Colors.white),
-            backgroundColor: Styles.APred,
-            label: "Verwijder alle studenten",
-            labelStyle: const TextStyle(fontSize: 16.0),
-            onTap: () {
-              removeStudents();
-            }
-          ),
+              child: const Icon(Icons.delete, color: Colors.white),
+              backgroundColor: Styles.APred,
+              label: "Verwijder alle studenten",
+              onTap: () {
+                removeStudents();
+              }),
           SpeedDialChild(
-            child: const Icon(Icons.group_add, color: Colors.white),
-            backgroundColor: Styles.APred,
-            label: "Voeg meerdere studenten toe",
-            labelStyle: const TextStyle(fontSize: 16.0),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddMultipleStudent()),
-              );
-            }
-          ),
+              child: const Icon(Icons.group_add, color: Colors.white),
+              backgroundColor: Styles.APred,
+              label: "Voeg meerdere studenten toe",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const AddMultipleStudent()),
+                );
+              }),
           SpeedDialChild(
-            child: const Icon(Icons.person_add, color: Colors.white),
-            backgroundColor: Styles.APred,
-            label: "Voeg één student toe",
-            labelStyle: const TextStyle(fontSize: 16.0),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const AddStudent()),
-              );
-            }
-          ),
+              child: const Icon(Icons.person_add, color: Colors.white),
+              backgroundColor: Styles.APred,
+              label: "Voeg één student toe",
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddStudent()),
+                );
+              }),
         ],
       ),
     );
@@ -129,7 +148,8 @@ class _StudentenScreenState extends State<StudentenScreen> {
 
   Future removeStudent({required String inpId}) async {
     try {
-      final docStudent = FirebaseFirestore.instance.collection('studenten').doc(inpId);
+      final docStudent =
+          FirebaseFirestore.instance.collection('studenten').doc(inpId);
       await docStudent.delete();
     } on FirebaseException catch (e) {
       Toaster().showToastMsg(e.message);

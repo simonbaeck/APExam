@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/admin/studenten/student.class.dart';
+import 'package:flutter_project/admin/examens/vraag.class.dart';
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 
@@ -59,13 +59,8 @@ class _AddOpenvraag extends State<AddOpenvraag> {
                     alignment: Alignment.topLeft,
                     child: ElevatedButton(
                         onPressed: () {
-                          final firstname = vraagController.text;
-
-                          /*
-                          addStudent(
-                              inpFirstname: firstname,
-                              inpLastname: lastname,
-                              inpSnum: snum);*/
+                          final vraag = vraagController.text;
+                          addopenvraag(inpOpgave: vraag);
                         },
                         style: ButtonStyle(
                           textStyle: MaterialStateProperty.all(
@@ -87,16 +82,16 @@ class _AddOpenvraag extends State<AddOpenvraag> {
       ),
     );
   }
-/*
-  Future addStudent(
-      {required String inpFirstname,
-      required String inpLastname,
-      required String inpSnum}) async {
-    final docStudent = FirebaseFirestore.instance.collection('studenten').doc();
-    final Student student = Student();
-    student.id = docStudent.id;
-    student.firstname = inpFirstname;
-    student.lastname = inpLastname;
-    student.snumber = inpSnum;
-  }*/
+
+  Future addopenvraag({required String inpOpgave}) async {
+    final docVraag = FirebaseFirestore.instance.collection('vragen').doc();
+    final Vraag vraag = Vraag();
+    vraag.id = docVraag.id;
+    vraag.opgave = inpOpgave;
+
+    await docVraag.set(vraag.toMap()).then((res) {
+      Toaster().showToastMsg("vraag toegevoegd");
+      Navigator.of(context).pop();
+    });
+  }
 }
