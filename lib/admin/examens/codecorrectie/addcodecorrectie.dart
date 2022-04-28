@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/admin/examens/codecorrectie/correctievraag.class.dart';
 import 'package:flutter_project/admin/studenten/student.class.dart';
-import '../../services/toaster.dart';
-import '../../styles/styles.dart';
+import '../../../services/toaster.dart';
+import '../../../styles/styles.dart';
 
 class Addcodecorrectie extends StatefulWidget {
   const Addcodecorrectie({Key? key}) : super(key: key);
@@ -77,14 +78,10 @@ class _Addcodecorrectie extends State<Addcodecorrectie> {
                     alignment: Alignment.topLeft,
                     child: ElevatedButton(
                         onPressed: () {
-                          final firstname = vraagController.text;
-                          final lastname = antwoordController.text;
-
-                          /*
-                          addStudent(
-                              inpFirstname: firstname,
-                              inpLastname: lastname,
-                              inpSnum: snum);*/
+                          final vraag = vraagController.text;
+                          final oplossing = antwoordController.text;
+                          addcodecorrectie(
+                              inpOpgave: vraag, inpOplossing: oplossing);
                         },
                         style: ButtonStyle(
                           textStyle: MaterialStateProperty.all(
@@ -106,16 +103,19 @@ class _Addcodecorrectie extends State<Addcodecorrectie> {
       ),
     );
   }
-/*
-  Future addStudent(
-      {required String inpFirstname,
-      required String inpLastname,
-      required String inpSnum}) async {
-    final docStudent = FirebaseFirestore.instance.collection('studenten').doc();
-    final Student student = Student();
-    student.id = docStudent.id;
-    student.firstname = inpFirstname;
-    student.lastname = inpLastname;
-    student.snumber = inpSnum;
-  }*/
+
+  Future addcodecorrectie(
+      {required String inpOpgave, required String inpOplossing}) async {
+    final docVraag =
+        FirebaseFirestore.instance.collection("codecorrectie").doc();
+    final CorrectieVraag correctieVraag = CorrectieVraag();
+    correctieVraag.id = docVraag.id;
+    correctieVraag.opgave = inpOpgave;
+    correctieVraag.oplossing = inpOplossing;
+
+    await docVraag.set(correctieVraag.toMap()).then((res) {
+      Toaster().showToastMsg("vraag toegevoegd");
+      Navigator.of(context).pop();
+    });
+  }
 }

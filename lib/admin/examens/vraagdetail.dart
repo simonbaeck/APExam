@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../../styles/styles.dart';
+import '../../styles/styles.dart';
 
 class VraagDetail extends StatefulWidget {
   final DocumentSnapshot vraag;
