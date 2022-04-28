@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/studenten/student.class.dart';
-import '../../services/toaster.dart';
-import '../../styles/styles.dart';
+import '../../../services/toaster.dart';
+import '../../../styles/styles.dart';
 
 class AddMultplechoice extends StatefulWidget {
   const AddMultplechoice({Key? key}) : super(key: key);

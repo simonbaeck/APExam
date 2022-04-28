@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../styles/styles.dart';
+import '../../../styles/styles.dart';
 
 class VraagDetail extends StatefulWidget {
   final DocumentSnapshot vraag;
@@ -19,7 +19,7 @@ class _VraagDetail extends State<VraagDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.vraag["nummer"].toString()),
+        title: Text(widget.vraag["vraag"].toString()),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
@@ -38,44 +38,6 @@ class _VraagDetail extends State<VraagDetail> {
                     maxZoom: 17.0,
                     allowPanning: false,
                   ),
-                  layers: [
-                    TileLayerOptions(
-                        minZoom: 17,
-                        maxZoom: 17,
-                        backgroundColor: Colors.white,
-                        urlTemplate:
-                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                        subdomains: ['a', 'b', 'c']),
-                    CircleLayerOptions(
-                      circles: [
-                        CircleMarker(
-                            //radius marker
-                            point:
-                                LatLng(51.230117719874784, 4.416240071306905),
-                            color: Styles.APred.withOpacity(0.15),
-                            borderStrokeWidth: 2.0,
-                            borderColor: Styles.APred.withOpacity(0.35),
-                            radius: 50 //radius
-                            ),
-                      ],
-                    ),
-                    MarkerLayerOptions(
-                      markers: [
-                        Marker(
-                          height: 55.0,
-                          width: 55.0,
-                          point: LatLng(51.230117719874784, 4.416240071306905),
-                          builder: (context) => Container(
-                            child: Icon(
-                              Icons.location_on,
-                              color: Styles.APred[900],
-                              size: 55.0,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                 ),
               ),
             ),

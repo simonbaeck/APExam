@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/examens/addmultiplechoise.dart';
-import 'package:flutter_project/admin/examens/addopenvraag.dart';
+import 'package:flutter_project/admin/examens/openvraag/addopenvraag.dart';
 import 'package:flutter_project/admin/examens/addcodecorrectie.dart';
-import 'package:flutter_project/admin/examens/vraagdetail.dart';
+import 'package:flutter_project/admin/examens/openvraag/vraagdetail.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'addmultiplechoise.dart';
-import 'addopenvraag.dart';
+import 'openvraag/addopenvraag.dart';
 import 'addcodecorrectie.dart';
 
 class ExamensScreen extends StatefulWidget {
@@ -30,10 +30,8 @@ class _ExamensScreenState extends State<ExamensScreen> {
           child: Column(
             children: [
               StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('vragen')
-                    .orderBy('nummer', descending: false)
-                    .snapshots(),
+                stream:
+                    FirebaseFirestore.instance.collection('vragen').snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return const Text("Error");
@@ -43,27 +41,52 @@ class _ExamensScreenState extends State<ExamensScreen> {
                     return snapshot.data!.docs.isNotEmpty
                         ? Expanded(
                             child: ListView.builder(
-                            itemCount: snapshot.data!.docs.length,
-                            itemBuilder: (context, index) {
-                              DocumentSnapshot ds = snapshot.data!.docs[index];
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => VraagDetail(
-                                              vraag: ds,
-                                            )),
-                                  );
-                                },
-                              );
-                            },
-                          ))
+                              padding: const EdgeInsets.fromLTRB(
+                                  26.0, 30.0, 26.0, 30.0),
+                              shrinkWrap: true,
+                              controller: ScrollController(),
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot ds =
+                                    snapshot.data!.docs[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              VraagDetail(vraag: ds)),
+                                    );
+                                  },
+                                  child: Card(
+                                    child: ListTile(
+                                      title: Text("${ds["vraag"]}"),
+                                      trailing: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          IconButton(
+                                            icon: const Icon(Icons.delete),
+                                            onPressed: () {
+                                              //removeStudent(inpId: ds["id"]);
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
                         : Container(
-                            width: double.infinity,
-                            child: Text(
-                              "Examens",
-                              style: Styles.headerStyleH1,
+                            padding: const EdgeInsets.fromLTRB(
+                                26.0, 30.0, 26.0, 30.0),
+                            child: const Card(
+                              child: ListTile(
+                                title: Text("Er zijn nog geen vragen"),
+                                subtitle: Text(
+                                    "Klik rechtsonder op het + icoontje om vragen toe te voegen."),
+                              ),
                             ),
                           );
                   }

@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/admin/examens/vraag.class.dart';
-import '../../services/toaster.dart';
-import '../../styles/styles.dart';
+import 'package:flutter_project/admin/examens/openvraag/vraag.class.dart';
+import '../../../services/toaster.dart';
+import '../../../styles/styles.dart';
 
 class AddOpenvraag extends StatefulWidget {
   const AddOpenvraag({Key? key}) : super(key: key);
@@ -50,7 +50,7 @@ class _AddOpenvraag extends State<AddOpenvraag> {
                     keyboardType: TextInputType.text,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "Kies hier een vraag",
+                      hintText: "Bedenk hier een vraag",
                     ),
                   ),
                   const SizedBox(height: 20.0),
