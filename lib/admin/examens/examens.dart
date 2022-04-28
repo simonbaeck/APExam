@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'multiplechoice/addmultiplechoise.dart';
 import 'openvraag/addopenvraag.dart';
 import 'codecorrectie/addcodecorrectie.dart';
+import '../../services/toaster.dart';
 
 class ExamensScreen extends StatefulWidget {
   const ExamensScreen({Key? key}) : super(key: key);
@@ -70,6 +71,7 @@ class _ExamensScreenState extends State<ExamensScreen> {
                                             icon: const Icon(Icons.delete),
                                             onPressed: () {
                                               //removeStudent(inpId: ds["id"]);
+                                              removeVraag(inpId: ds["id"]);
                                             },
                                           ),
                                         ],
@@ -135,6 +137,7 @@ class _ExamensScreenState extends State<ExamensScreen> {
                                             icon: const Icon(Icons.delete),
                                             onPressed: () {
                                               //removeStudent(inpId: ds["id"]);
+                                              removeCode(inpId: ds["id"]);
                                             },
                                           ),
                                         ],
@@ -208,5 +211,25 @@ class _ExamensScreenState extends State<ExamensScreen> {
         ],
       ),
     );
+  }
+
+  Future removeVraag({required String inpId}) async {
+    try {
+      final docVraag =
+          FirebaseFirestore.instance.collection('vragen').doc(inpId);
+      await docVraag.delete();
+    } on FirebaseException catch (e) {
+      Toaster().showToastMsg(e.message);
+    }
+  }
+
+  Future removeCode({required String inpId}) async {
+    try {
+      final docVraag =
+          FirebaseFirestore.instance.collection('codecorrectie').doc(inpId);
+      await docVraag.delete();
+    } on FirebaseException catch (e) {
+      Toaster().showToastMsg(e.message);
+    }
   }
 }
