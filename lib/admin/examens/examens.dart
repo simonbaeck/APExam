@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/examens/multiplechoice/addmultiplechoise.dart';
 import 'package:flutter_project/admin/examens/openvraag/addopenvraag.dart';
 import 'package:flutter_project/admin/examens/codecorrectie/addcodecorrectie.dart';
-import 'package:flutter_project/admin/examens/vraagdetail.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -53,14 +52,6 @@ class _ExamensScreenState extends State<ExamensScreen> {
                                 DocumentSnapshot ds =
                                     snapshot.data!.docs[index];
                                 return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              VraagDetail(vraag: ds)),
-                                    );
-                                  },
                                   child: Card(
                                     child: ListTile(
                                       subtitle: Text("Open vraag"),
@@ -73,72 +64,6 @@ class _ExamensScreenState extends State<ExamensScreen> {
                                             onPressed: () {
                                               //removeStudent(inpId: ds["id"]);
                                               removeVraag(inpId: ds["id"]);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : Container(
-                            padding: const EdgeInsets.fromLTRB(
-                                26.0, 30.0, 26.0, 30.0),
-                            child: const Card(
-                              child: ListTile(
-                                title: Text("Er zijn nog geen vragen"),
-                                subtitle: Text(
-                                    "Klik rechtsonder op het + icoontje om vragen toe te voegen."),
-                              ),
-                            ),
-                          );
-                  }
-                },
-              ),
-              /*Code correctie*/
-              StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("codecorrectie")
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasError) {
-                    return const Text("Error");
-                  } else if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else {
-                    return snapshot.data!.docs.isNotEmpty
-                        ? Expanded(
-                            child: ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(
-                                  26.0, 30.0, 26.0, 30.0),
-                              shrinkWrap: true,
-                              controller: ScrollController(),
-                              itemCount: snapshot.data!.docs.length,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot ds =
-                                    snapshot.data!.docs[index];
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              VraagDetail(vraag: ds)),
-                                    );
-                                  },
-                                  child: Card(
-                                    child: ListTile(
-                                      title: Text("${ds["vraag"]}"),
-                                      trailing: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: const Icon(Icons.delete),
-                                            onPressed: () {
-                                              //removeStudent(inpId: ds["id"]);
-                                              removeCode(inpId: ds["id"]);
                                             },
                                           ),
                                         ],
