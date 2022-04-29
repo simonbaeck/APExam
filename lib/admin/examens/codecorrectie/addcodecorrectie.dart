@@ -106,8 +106,7 @@ class _Addcodecorrectie extends State<Addcodecorrectie> {
 
   Future addcodecorrectie(
       {required String inpOpgave, required String inpOplossing}) async {
-    final docVraag =
-        FirebaseFirestore.instance.collection("codecorrectie").doc();
+    final docVraag = FirebaseFirestore.instance.collection("vragen").doc();
     final CorrectieVraag correctieVraag = CorrectieVraag();
     correctieVraag.id = docVraag.id;
     correctieVraag.opgave = inpOpgave;
