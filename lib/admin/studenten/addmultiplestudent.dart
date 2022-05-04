@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/studenten/student.class.dart';
+import 'package:flutter_project/services/loader.dart';
 
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
@@ -17,15 +18,25 @@ class AddMultipleStudent extends StatefulWidget {
 
 class _AddMultipleStudentState extends State<AddMultipleStudent> {
   final csvInputController = TextEditingController();
+  bool isLoading = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(),
-      resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
-        child: Column(
+        child: !isLoading ? Column(
           children: [
             Container(
               width: double.infinity,
@@ -49,7 +60,7 @@ class _AddMultipleStudentState extends State<AddMultipleStudent> {
                   Container(
                     width: double.infinity,
                     child: Text(
-                      "Formaat: <voornaam>,<achternaam>,<snummer>",
+                      "Formaat: <voornaam>;<achternaam>;<snummer>",
                       style: Styles.textColorBlack,
                     ),
                   ),
@@ -62,7 +73,7 @@ class _AddMultipleStudentState extends State<AddMultipleStudent> {
                     minLines: 5,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
-                      hintText: "john,doe,s569874,anna,bolen,s897456",
+                      hintText: "john;doe;s569874\nanna;bolen;s897456",
                     ),
                   ),
                   const SizedBox(height: 20.0),
@@ -89,16 +100,20 @@ class _AddMultipleStudentState extends State<AddMultipleStudent> {
               ),
             ),
           ],
-        ),
+        ) : const LoaderWidget(loaderText: "Studenten toevoegen..."),
       ),
     );
   }
 
   Future addStudents({required String inpCsv}) async {
+    setState(() {
+      isLoading = true;
+    });
+
     List<List<String>> studentList = [];
     int counter1 = 0;
     List<String> temp = [];
-    inpCsv.replaceAll("\n", ",").split(',').asMap().forEach((index, value) {
+    inpCsv.replaceAll("\n", ";").split(';').asMap().forEach((index, value) {
       temp.add(value);
       counter1++;
       if (counter1 == 3) {
@@ -120,6 +135,9 @@ class _AddMultipleStudentState extends State<AddMultipleStudent> {
         student = Student();
         counter2++;
         if (counter2 == studentList.length) {
+          setState(() {
+            isLoading = false;
+          });
           Toaster().showToastMsg("${studentList.length} studenten toegevoegd");
           counter2 = 0;
           studentList = [];
@@ -131,19 +149,19 @@ class _AddMultipleStudentState extends State<AddMultipleStudent> {
 }
 
 /*
-John,Doe,s111111
-Edward,Delacerda,s469521
-William,Cooper,s746931
-Stephen,Morgan,s367491
-Kevin,Carver,s851379
-Hazel,Bailey,s761349
-Donald,Beebe,s713982
-Michael,Huynh,s766954
-Virginia,Wan,s897461
-John,Rutledge,s482615
-Muriel,Butner,s763149
-Arthur,Zambrano,s886314
-Susan,Smith,s773199
-Jessica,Riggins,s615524
-Martha,Barnette,s966351
+John;Doe;s111111
+Edward;Delacerda;s469521
+William;Cooper;s746931
+Stephen;Morgan;s367491
+Kevin;Carver;s851379
+Hazel;Bailey;s761349
+Donald;Beebe;s713982
+Michael;Huynh;s766954
+Virginia;Wan;s897461
+John;Rutledge;s482615
+Muriel;Butner;s763149
+Arthur;Zambrano;s886314
+Susan;Smith;s773199
+Jessica;Riggins;s615524
+Martha;Barnette;s966351
 */

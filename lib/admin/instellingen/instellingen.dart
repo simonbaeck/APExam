@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/main.dart';
 import 'package:flutter_project/services/toaster.dart';
@@ -152,4 +153,5 @@ class _InstellingenScreenState extends State<InstellingenScreen> {
       Toaster().showToastMsg(e.message);
     }
   }
+
 }

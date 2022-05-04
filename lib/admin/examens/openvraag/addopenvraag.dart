@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/admin/examens/openvraag/vraag.class.dart';
+import 'package:flutter_project/admin/examens/openvraag/openvraag.class.dart';
 import '../../../services/toaster.dart';
 import '../../../styles/styles.dart';
 
@@ -88,6 +88,7 @@ class _AddOpenvraag extends State<AddOpenvraag> {
     final Vraag vraag = Vraag();
     vraag.id = docVraag.id;
     vraag.opgave = inpOpgave;
+    vraag.type = "open";
 
     await docVraag.set(vraag.toMap()).then((res) {
       Toaster().showToastMsg("vraag toegevoegd");

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/studenten/addmultiplestudent.dart';
 import 'package:flutter_project/admin/studenten/addstudent.dart';
 import 'package:flutter_project/admin/studenten/studentdetail.dart';
+import 'package:flutter_project/services/loader.dart';
 import 'package:flutter_project/services/loadingscreen.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -17,6 +18,18 @@ class StudentenScreen extends StatefulWidget {
 }
 
 class _StudentenScreenState extends State<StudentenScreen> {
+  bool isDeleting = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,65 +49,58 @@ class _StudentenScreenState extends State<StudentenScreen> {
                   if (snapshot.hasError) {
                     return const Text("Error");
                   } else if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const LoaderWidget(loaderText: "Laden...");
                   } else {
-                    return snapshot.data!.docs.isNotEmpty
-                        ? Expanded(
-                            child: ListView.builder(
-                              padding: const EdgeInsets.fromLTRB(
-                                  26.0, 30.0, 26.0, 30.0),
-                              shrinkWrap: true,
-                              controller: ScrollController(),
-                              itemCount: snapshot.data!.docs.length,
-                              itemBuilder: (context, index) {
-                                DocumentSnapshot ds =
-                                    snapshot.data!.docs[index];
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              StudentDetail(student: ds)),
-                                    );
-                                  },
-                                  child: Card(
-                                    child: ListTile(
-                                      title: Text(
-                                          "${ds["firstname"]} ${ds['lastname']}"),
-                                      subtitle: Text("${ds['snumber']}"),
-                                      leading: CircleAvatar(
-                                        backgroundImage: NetworkImage(
-                                            "https://ui-avatars.com/api/?name=${ds['firstname']}+${ds['lastname']}&background=B3161D&color=FFFFFF&font-size=0.4&bold=true"),
-                                      ),
-                                      trailing: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: const Icon(Icons.delete),
-                                            onPressed: () {
-                                              removeStudent(inpId: ds["id"]);
-                                            },
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
+                    if (snapshot.data!.docs.isNotEmpty && !isDeleting) {
+                      return Expanded(
+                        child: ListView.builder(
+                          padding: const EdgeInsets.fromLTRB(
+                              26.0, 30.0, 26.0, 30.0),
+                          shrinkWrap: true,
+                          controller: ScrollController(),
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot ds =
+                            snapshot.data!.docs[index];
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          StudentDetail(student: ds)),
                                 );
                               },
-                            ),
-                          )
-                        : Container(
-                            padding: const EdgeInsets.fromLTRB(
-                                26.0, 30.0, 26.0, 30.0),
-                            child: const Card(
-                              child: ListTile(
-                                title: Text("Er zijn geen studenten aanwezig"),
-                                subtitle: Text(
-                                    "Klik rechtsonder op het + icoontje om studenten toe te voegen."),
+                              child: Card(
+                                child: ListTile(
+                                  title: Text(
+                                      "${ds["firstname"]} ${ds['lastname']}"),
+                                  subtitle: Text("${ds['snumber']}"),
+                                  leading: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        "https://ui-avatars.com/api/?name=${ds['firstname']}+${ds['lastname']}&background=B3161D&color=FFFFFF&font-size=0.4&bold=true"),
+                                  ),
+                                ),
                               ),
-                            ),
-                          );
+                            );
+                          },
+                        ),
+                      );
+                    } else if (snapshot.data!.docs.isEmpty && !isDeleting) {
+                      return Container(
+                        padding: const EdgeInsets.fromLTRB(
+                            26.0, 30.0, 26.0, 30.0),
+                        child: const Card(
+                          child: ListTile(
+                            title: Text("Er zijn geen studenten aanwezig"),
+                            subtitle: Text(
+                                "Klik rechtsonder op het + icoontje om studenten toe te voegen."),
+                          ),
+                        ),
+                      );
+                    } else {
+                      return const LoaderWidget(loaderText: "Studenten verwijderen...");
+                    }
                   }
                 },
               ),
@@ -162,9 +168,17 @@ class _StudentenScreenState extends State<StudentenScreen> {
       final snapshots = await collection.get();
       final doclength = snapshots.docs.length;
 
+      setState(() {
+        isDeleting = true;
+      });
+
       for (var doc in snapshots.docs) {
         await doc.reference.delete();
       }
+
+      setState(() {
+        isDeleting = false;
+      });
 
       Toaster().showToastMsg("$doclength Studenten verwijderd");
     } on FirebaseException catch (e) {

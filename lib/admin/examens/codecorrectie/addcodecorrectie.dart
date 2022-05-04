@@ -111,6 +111,7 @@ class _Addcodecorrectie extends State<Addcodecorrectie> {
     correctieVraag.id = docVraag.id;
     correctieVraag.opgave = inpOpgave;
     correctieVraag.oplossing = inpOplossing;
+    correctieVraag.type = "correctie";
 
     await docVraag.set(correctieVraag.toMap()).then((res) {
       Toaster().showToastMsg("vraag toegevoegd");
