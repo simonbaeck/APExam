@@ -5,10 +5,12 @@ import 'package:flutter_project/admin/examens/codecorrectie/addcodecorrectie.dar
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../services/loader.dart';
 import 'multiplechoice/addmultiplechoise.dart';
 import 'openvraag/addopenvraag.dart';
 import 'codecorrectie/addcodecorrectie.dart';
 import '../../services/toaster.dart';
+import '../../services/capitalize.dart';
 
 class ExamensScreen extends StatefulWidget {
   const ExamensScreen({Key? key}) : super(key: key);
@@ -24,7 +26,6 @@ class _ExamensScreenState extends State<ExamensScreen> {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
         child: Align(
           alignment: Alignment.topLeft,
           child: Column(
@@ -38,7 +39,7 @@ class _ExamensScreenState extends State<ExamensScreen> {
                   if (snapshot.hasError) {
                     return const Text("Error");
                   } else if (!snapshot.hasData) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const LoaderWidget(loaderText: "Laden...");
                   } else {
                     return snapshot.data!.docs.isNotEmpty
                         ? Expanded(
@@ -54,8 +55,8 @@ class _ExamensScreenState extends State<ExamensScreen> {
                                 return GestureDetector(
                                   child: Card(
                                     child: ListTile(
-                                      subtitle: Text("Open vraag"),
-                                      title: Text("${ds["vraag"]}"),
+                                      subtitle: Text("${ds["type"].toString().capitalizeString()} vraag"),
+                                      title: Text(ds["vraag"]),
                                       trailing: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: <Widget>[

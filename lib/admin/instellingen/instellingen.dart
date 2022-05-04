@@ -15,25 +15,17 @@ class InstellingenScreen extends StatefulWidget {
 
 class _InstellingenScreenState extends State<InstellingenScreen> {
   final passwordController = TextEditingController();
-  final testController = TextEditingController();
   bool isButtonDisabled = true;
-  bool checkBoxValid = true;
-  bool _checked = false;
-  bool hasContinued = false;
-
-  Map<String, bool> checklist = {};
 
   @override
   void dispose() {
     passwordController.dispose();
-    testController.dispose();
     super.dispose();
   }
 
   void onValueChange() {
     setState(() {
       passwordController.text;
-      testController.text;
       if (passwordController.text.length >= 6) {
         isButtonDisabled = false;
       } else {
@@ -46,7 +38,6 @@ class _InstellingenScreenState extends State<InstellingenScreen> {
   void initState() {
     super.initState();
     passwordController.addListener(onValueChange);
-    testController.addListener(onValueChange);
   }
 
   @override
@@ -141,87 +132,6 @@ class _InstellingenScreenState extends State<InstellingenScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 40.0),
-              Container(
-                margin: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-                child: Column(
-                  children: <Widget>[
-                    TextFormField(
-                      controller: testController,
-                      style: const TextStyle(fontSize: 20),
-                      keyboardType: TextInputType.text,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: "Antwoorden",
-                      ),
-                    ),
-                    const SizedBox(height: 20.0),
-                    !hasContinued ? Container(
-                      alignment: Alignment.topLeft,
-                      child: ElevatedButton(
-                          onPressed: () => createMap(answers: testController.text),
-                          style: ButtonStyle(
-                            textStyle: MaterialStateProperty.all(
-                              const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            minimumSize: MaterialStateProperty.all(
-                                const Size(double.infinity, 65)),
-                          ),
-                          child: Text("juiste antwoorden selecteren".toUpperCase())),
-                    ) : const SizedBox(height: 0.0),
-                    hasContinued ? Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Selecteer hieronder de juiste antwoorden op de multiple choice vraag",
-                            style: Styles.textColorBlack,
-                          ),
-                          const SizedBox(height: 10.0),
-                          ListView.builder(
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: checklist.length,
-                              itemBuilder: (context, index) {
-                                return CheckboxListTile(
-                                  title: Text(checklist.keys.elementAt(index)),
-                                  value: checklist.values.elementAt(index),
-                                  controlAffinity: ListTileControlAffinity.leading,
-                                  selectedTileColor: Styles.APred.shade50,
-                                  selected: checklist.values.elementAt(index),
-                                  onChanged: (bool? val) {
-                                    setState(() {
-                                      checklist.update(checklist.keys.elementAt(index), (value) => val!);
-                                    });
-                                  },
-                                );
-                              }
-                          ),
-                          const SizedBox(height: 20.0),
-                          ElevatedButton(
-                            onPressed: () => print(checklist),
-                            style: ButtonStyle(
-                              textStyle: MaterialStateProperty.all(
-                                const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              minimumSize: MaterialStateProperty.all(
-                                  const Size(double.infinity, 65)),
-                            ),
-                            child: Text("Opslaan".toUpperCase())
-                          ),
-                        ],
-                      ),
-                    ) : const SizedBox(height: 0.0),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
@@ -242,16 +152,6 @@ class _InstellingenScreenState extends State<InstellingenScreen> {
     } on FirebaseAuthException catch (e) {
       Toaster().showToastMsg(e.message);
     }
-  }
-
-  createMap({ required String answers }) {
-    answers.split(";").forEach((element) {
-      checklist[element] = false;
-    });
-
-    setState(() {
-      hasContinued = true;
-    });
   }
 
 }
