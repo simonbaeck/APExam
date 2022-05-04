@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_project/services/loadingscreen.dart';
 import 'package:flutter_project/styles/styles.dart';
 
+import 'package:flutter_project/student/questions.dart';
+
 class Student {
   late int id;
   late String name;
@@ -67,7 +69,9 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 child: Column(
                   children: <Widget>[
                     StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance.collection('studenten').snapshots(),
+                      stream: FirebaseFirestore.instance
+                          .collection('studenten')
+                          .snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           _isButtonDisabled = true;
@@ -80,7 +84,8 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                             ),
                             items: snapshot.data?.docs.map((student) {
                               return DropdownMenuItem(
-                                child: Text("${student.get('snumber')} [${student.get('firstname')} ${student.get('lastname')}]"),
+                                child: Text(
+                                    "${student.get('snumber')} [${student.get('firstname')} ${student.get('lastname')}]"),
                                 value: student.get('snumber'),
                               );
                             }).toList(),
@@ -99,18 +104,27 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-                        onPressed: _isButtonDisabled ? null : () => printObj(),
-                        style: ButtonStyle(
-                          textStyle: MaterialStateProperty.all(
-                            const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          onPressed: _isButtonDisabled
+                              ? null
+                              : () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const QuestionsScreen()),
+                                  );
+                                },
+                          style: ButtonStyle(
+                            textStyle: MaterialStateProperty.all(
+                              const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
+                            minimumSize: MaterialStateProperty.all(
+                                const Size(double.infinity, 65)),
                           ),
-                          minimumSize:
-                              MaterialStateProperty.all(const Size(double.infinity, 65)),
-                        ),
-                        child: Text("Naar examen".toUpperCase())),
+                          child: Text("Naar examen".toUpperCase())),
                     ),
                   ],
                 ),

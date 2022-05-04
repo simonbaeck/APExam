@@ -7,7 +7,7 @@ import 'package:flutter_project/admin/admindashboard.dart';
 import 'package:flutter_project/admin/adminlogin.dart';
 import 'package:flutter_project/homepage.dart';
 import 'package:flutter_project/services/loadingscreen.dart';
-import 'package:flutter_project/studentlogin.dart';
+import 'package:flutter_project/student/studentlogin.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -61,18 +61,18 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingScreen();
-          }
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const LoadingScreen();
+            }
 
-          if (snapshot.hasData) {
-            return const AdminDasboard();
-          } else {
-            return const Homepage();
-          }
-        }),
+            if (snapshot.hasData) {
+              return const AdminDasboard();
+            } else {
+              return const Homepage();
+            }
+          }),
     );
   }
 }
