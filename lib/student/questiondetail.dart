@@ -15,6 +15,9 @@ class QuestionDetail extends StatefulWidget {
 }
 
 class _QuestionDetailState extends State<QuestionDetail> {
+  bool isChecked = false;
+  final answerController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,6 +40,43 @@ class _QuestionDetailState extends State<QuestionDetail> {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 20.0),
+            Container(
+              width: double.infinity,
+              child: Text(
+                "Answer:",
+                style: Styles.textColorBlack,
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            TextFormField(
+              controller: answerController,
+              style: const TextStyle(fontSize: 20),
+              keyboardType: TextInputType.text,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: " ",
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            Container(
+              alignment: Alignment.topLeft,
+              child: ElevatedButton(
+                  onPressed: () {
+                    final oplossing = answerController.text;
+                  },
+                  style: ButtonStyle(
+                    textStyle: MaterialStateProperty.all(
+                      const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    minimumSize: MaterialStateProperty.all(
+                        const Size(double.infinity, 65)),
+                  ),
+                  child: Text("Answer".toUpperCase())),
             ),
           ],
         ),

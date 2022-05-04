@@ -64,17 +64,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                                   },
                                   child: Card(
                                     child: ListTile(
-                                      title: Text("${ds["id"]}"),
-                                      subtitle: Text("${ds['vraag']}"),
-                                      trailing: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: <Widget>[
-                                          IconButton(
-                                            icon: const Icon(Icons.delete),
-                                            onPressed: () {},
-                                          ),
-                                        ],
-                                      ),
+                                      title: Text("${ds["vraag"]}"),
                                     ),
                                   ),
                                 );
@@ -87,8 +77,6 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                             child: const Card(
                               child: ListTile(
                                 title: Text("Er zijn geen vragen gevonden"),
-                                subtitle: Text(
-                                    "Klik rechtsonder op het + icoontje om studenten toe te voegen."),
                               ),
                             ),
                           );
