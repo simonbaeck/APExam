@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/studentlogin.dart';
+import 'package:flutter_project/student/studentlogin.dart';
 import 'admin/adminlogin.dart';
 
 class Homepage extends StatefulWidget {
