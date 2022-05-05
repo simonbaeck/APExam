@@ -49,6 +49,15 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
           alignment: Alignment.topLeft,
           child: ListView(
             children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: Image.asset(
+                  '../assets/AP_logo.png',
+                  width: 110.0,
+                  height: 64.78,
+                ),
+              ),
+              const SizedBox(height: 45.0),
               Container(
                 width: double.infinity,
                 child: Text(
@@ -104,27 +113,24 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-                          onPressed: _isButtonDisabled
-                              ? null
-                              : () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const QuestionsScreen()),
-                                  );
-                                },
-                          style: ButtonStyle(
-                            textStyle: MaterialStateProperty.all(
-                              const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        onPressed: _isButtonDisabled ? null : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const QuestionsScreen()),
+                          );
+                        },
+                        style: ButtonStyle(
+                          textStyle: MaterialStateProperty.all(
+                            const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            minimumSize: MaterialStateProperty.all(
-                                const Size(double.infinity, 65)),
                           ),
-                          child: Text("Naar examen".toUpperCase())),
+                          minimumSize: MaterialStateProperty.all(
+                              const Size(double.infinity, 65)),
+                        ),
+                        child: Text("Naar examen".toUpperCase())),
                     ),
                   ],
                 ),
