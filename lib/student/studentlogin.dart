@@ -104,27 +104,24 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-                          onPressed: _isButtonDisabled
-                              ? null
-                              : () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const QuestionsScreen()),
-                                  );
-                                },
-                          style: ButtonStyle(
-                            textStyle: MaterialStateProperty.all(
-                              const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                        onPressed: _isButtonDisabled ? null : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const QuestionsScreen()),
+                          );
+                        },
+                        style: ButtonStyle(
+                          textStyle: MaterialStateProperty.all(
+                            const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            minimumSize: MaterialStateProperty.all(
-                                const Size(double.infinity, 65)),
                           ),
-                          child: Text("Naar examen".toUpperCase())),
+                          minimumSize: MaterialStateProperty.all(
+                              const Size(double.infinity, 65)),
+                        ),
+                        child: Text("Naar examen".toUpperCase())),
                     ),
                   ],
                 ),
