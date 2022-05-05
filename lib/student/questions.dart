@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/studenten/addmultiplestudent.dart';
 import 'package:flutter_project/admin/studenten/addstudent.dart';
+import 'package:flutter_project/admin/studenten/student.class.dart';
 import 'package:flutter_project/admin/studenten/studentdetail.dart';
 import 'package:flutter_project/services/loadingscreen.dart';
 import 'package:flutter_project/student/questiondetail.dart';
@@ -11,7 +12,8 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import '../../services/toaster.dart';
 
 class QuestionsScreen extends StatefulWidget {
-  const QuestionsScreen({Key? key}) : super(key: key);
+  final String? currentStudentId;
+  const QuestionsScreen({Key? key, required this.currentStudentId}) : super(key: key);
 
   @override
   State<QuestionsScreen> createState() => _QuestionsScreenState();
@@ -22,7 +24,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Questions"),
+        title: Text("Questions " + widget.currentStudentId.toString()),
       ),
       body: Container(
         width: double.infinity,

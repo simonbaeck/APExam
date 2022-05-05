@@ -3,6 +3,7 @@ class Student {
   late String firstname;
   late String lastname;
   late String snumber;
+  //late String exam_active;
 
   // Student(this.id, this.firstname, this.lastname, this.snumber);
 
