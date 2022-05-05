@@ -49,15 +49,6 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
           alignment: Alignment.topLeft,
           child: ListView(
             children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Image.asset(
-                  '../assets/AP_logo.png',
-                  width: 110.0,
-                  height: 64.78,
-                ),
-              ),
-              const SizedBox(height: 45.0),
               Container(
                 width: double.infinity,
                 child: Text(
@@ -69,7 +60,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 width: double.infinity,
                 margin: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 0.0),
                 child: Text(
-                  "Selecteer hieronder je studentennummer om te starten.",
+                  "Vul hieronder je studentennummer in om te starten.",
                   style: Styles.textColorBlack,
                 ),
               ),
