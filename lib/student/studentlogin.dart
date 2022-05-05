@@ -49,6 +49,15 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
           alignment: Alignment.topLeft,
           child: ListView(
             children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: Image.asset(
+                  '../assets/AP_logo.png',
+                  width: 110.0,
+                  height: 64.78,
+                ),
+              ),
+              const SizedBox(height: 45.0),
               Container(
                 width: double.infinity,
                 child: Text(
