@@ -1,27 +1,25 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_project/services/loadingscreen.dart';
 import 'package:flutter_project/styles/styles.dart';
 
 import 'package:flutter_project/student/questions.dart';
 
-class Student {
-  late int id;
-  late String name;
+import '../admin/studenten/student.class.dart';
 
-  Student(int id, String name) {
-    this.id = id;
-    this.name = name;
-  }
-
-  @override
-  String toString() {
-    return '{ id: $id, name: $name }';
-  }
-}
+// class Student {
+//   late int id;
+//   late String name;
+//
+//   Student(int id, String name) {
+//     this.id = id;
+//     this.name = name;
+//   }
+//
+//   @override
+//   String toString() {
+//     return '{ id: $id, name: $name }';
+//   }
+// }
 
 class StudentLoginScreen extends StatefulWidget {
   const StudentLoginScreen({Key? key}) : super(key: key);
@@ -32,10 +30,10 @@ class StudentLoginScreen extends StatefulWidget {
 
 class _StudentLoginScreenState extends State<StudentLoginScreen> {
   bool _isButtonDisabled = true;
-  String? selectedValue;
+  String? studentId;
 
   printObj() {
-    print(selectedValue);
+    print(studentId);
   }
 
   @override
@@ -95,16 +93,16 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                               return DropdownMenuItem(
                                 child: Text(
                                     "${student.get('snumber')} [${student.get('firstname')} ${student.get('lastname')}]"),
-                                value: student.get('snumber'),
+                                value: student.get('id').toString(),
                               );
                             }).toList(),
                             onChanged: (value) {
                               setState(() {
-                                selectedValue = value.toString();
+                                studentId = value.toString();
                                 _isButtonDisabled = false;
                               });
                             },
-                            value: selectedValue,
+                            value: studentId,
                           );
                         }
                       },
@@ -113,24 +111,24 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-                        onPressed: _isButtonDisabled ? null : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const QuestionsScreen()),
-                          );
-                        },
-                        style: ButtonStyle(
-                          textStyle: MaterialStateProperty.all(
-                            const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          onPressed: _isButtonDisabled ? null : () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => QuestionsScreen(currentStudentId: studentId)),
+                            );
+                          },
+                          style: ButtonStyle(
+                            textStyle: MaterialStateProperty.all(
+                              const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
+                            minimumSize: MaterialStateProperty.all(
+                                const Size(double.infinity, 65)),
                           ),
-                          minimumSize: MaterialStateProperty.all(
-                              const Size(double.infinity, 65)),
-                        ),
-                        child: Text("Naar examen".toUpperCase())),
+                          child: Text("Naar examen".toUpperCase())),
                     ),
                   ],
                 ),
