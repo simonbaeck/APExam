@@ -119,9 +119,9 @@ class _AddStudentState extends State<AddStudent> {
     final docStudent = FirebaseFirestore.instance.collection('studenten').doc();
     final Student student = Student();
     student.id = docStudent.id;
-    student.firstname = inpFirstname;
-    student.lastname = inpLastname;
-    student.snumber = inpSnum;
+    student.firstName = inpFirstname;
+    student.lastName = inpLastname;
+    student.sNumber = inpSnum;
 
     await docStudent.set(student.toMap()).then((res) {
       Toaster().showToastMsg("Student toegevoegd");

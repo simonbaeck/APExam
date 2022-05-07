@@ -31,10 +31,8 @@ class _ExamensScreenState extends State<ExamensScreen> {
           child: Column(
             children: [
               /*Open vraag*/
-
               StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection('vragen').snapshots(),
+                stream: FirebaseFirestore.instance.collection('vragen').snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return const Text("Error");

@@ -43,7 +43,7 @@ class _StudentenScreenState extends State<StudentenScreen> {
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
                     .collection('studenten')
-                    .orderBy('firstname', descending: false)
+                    .orderBy('firstName', descending: false)
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
@@ -74,11 +74,11 @@ class _StudentenScreenState extends State<StudentenScreen> {
                               child: Card(
                                 child: ListTile(
                                   title: Text(
-                                      "${ds["firstname"]} ${ds['lastname']}"),
-                                  subtitle: Text("${ds['snumber']}"),
+                                      "${ds["firstName"]} ${ds['lastName']}"),
+                                  subtitle: Text("${ds['sNumber']}"),
                                   leading: CircleAvatar(
                                     backgroundImage: NetworkImage(
-                                        "https://ui-avatars.com/api/?name=${ds['firstname']}+${ds['lastname']}&background=B3161D&color=FFFFFF&font-size=0.4&bold=true"),
+                                        "https://ui-avatars.com/api/?name=${ds['firstName']}+${ds['lastName']}&background=B3161D&color=FFFFFF&font-size=0.4&bold=true"),
                                   ),
                                 ),
                               ),

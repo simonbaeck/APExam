@@ -1,9 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class Student {
   late String id;
-  late String firstname;
-  late String lastname;
-  late String snumber;
-  //late String exam_active;
+  late String firstName;
+  late String lastName;
+  late String sNumber;
+  late bool examActive = false;
+  late GeoPoint studentLocation = const GeoPoint(51.23007955208338, 4.416187171855199);
 
   // Student(this.id, this.firstname, this.lastname, this.snumber);
 
@@ -11,18 +14,22 @@ class Student {
   String toString() {
     return '{\n'
            '\tid: $id,\n'
-           '\tfirstname: $firstname,\n'
-           '\tlastname: $lastname,\n'
-           '\tsnumber: $snumber,'
+           '\tfirstName: $firstName,\n'
+           '\tlastName: $lastName,\n'
+           '\tsNumber: $sNumber,\n'
+           '\texamActive: $examActive,\n'
+           '\tstudentLocation: $studentLocation'
            '\n}';
   }
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'firstname': firstname,
-      'lastname': lastname,
-      'snumber': snumber,
+      'firstName': firstName,
+      'lastName': lastName,
+      'sNumber': sNumber,
+      'examActive': examActive,
+      'studentLocation': studentLocation
     };
   }
 }
