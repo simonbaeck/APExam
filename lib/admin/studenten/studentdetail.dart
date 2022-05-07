@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../styles/styles.dart';
@@ -15,12 +16,19 @@ class StudentDetail extends StatefulWidget {
 }
 
 class _StudentDetailState extends State<StudentDetail> {
+  late GeoPoint position;
+
+  @override
+  void initState() {
+    super.initState();
+    position = widget.student["studentLocation"];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.student["snumber"].toString()),
+        title: Text(widget.student["sNumber"].toString()),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
@@ -34,7 +42,7 @@ class _StudentDetailState extends State<StudentDetail> {
                 borderRadius: BorderRadius.circular(10),
                 child: FlutterMap(
                   options: MapOptions(
-                    center: LatLng(51.230117719874784, 4.416240071306905),
+                    center: LatLng(position.latitude, position.longitude),
                     minZoom: 17.0,
                     maxZoom: 17.0,
                     allowPanning: false,
@@ -50,25 +58,25 @@ class _StudentDetailState extends State<StudentDetail> {
                     CircleLayerOptions(
                       circles: [
                         CircleMarker( //radius marker
-                            point: LatLng(51.230117719874784, 4.416240071306905),
+                            point: LatLng(position.latitude, position.longitude),
                             color: Styles.APred.withOpacity(0.15),
                             borderStrokeWidth: 2.0,
                             borderColor: Styles.APred.withOpacity(0.35),
-                            radius: 50 //radius
+                            radius: 75 //radius
                         ),
                       ],
                     ),
                     MarkerLayerOptions(
                       markers: [
                         Marker(
-                          height: 55.0,
-                          width: 55.0,
-                          point: LatLng(51.230117719874784, 4.416240071306905),
+                          height: 35.0,
+                          width: 35.0,
+                          point: LatLng(position.latitude, position.longitude),
                           builder: (context) => Container(
                             child: Icon(
                               Icons.location_on,
                               color: Styles.APred[900],
-                              size: 55.0,
+                              size: 35.0,
                             ),
                           ),
                         ),
@@ -85,7 +93,7 @@ class _StudentDetailState extends State<StudentDetail> {
               child: Column(
                 children: [
                   Text(
-                    widget.student["firstname"].toString() + " " + widget.student["lastname"].toString(),
+                    widget.student["firstName"].toString() + " " + widget.student["lastName"].toString(),
                     style: Styles.headerStyleH1,
                   ),
                 ],

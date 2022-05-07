@@ -6,21 +6,6 @@ import 'package:flutter_project/student/questions.dart';
 
 import '../admin/studenten/student.class.dart';
 
-// class Student {
-//   late int id;
-//   late String name;
-//
-//   Student(int id, String name) {
-//     this.id = id;
-//     this.name = name;
-//   }
-//
-//   @override
-//   String toString() {
-//     return '{ id: $id, name: $name }';
-//   }
-// }
-
 class StudentLoginScreen extends StatefulWidget {
   const StudentLoginScreen({Key? key}) : super(key: key);
 
@@ -31,10 +16,6 @@ class StudentLoginScreen extends StatefulWidget {
 class _StudentLoginScreenState extends State<StudentLoginScreen> {
   bool _isButtonDisabled = true;
   String? studentId;
-
-  printObj() {
-    print(studentId);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +57,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 child: Column(
                   children: <Widget>[
                     StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('studenten')
-                          .snapshots(),
+                      stream: FirebaseFirestore.instance.collection('studenten').snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           _isButtonDisabled = true;
@@ -89,11 +68,11 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                               border: OutlineInputBorder(),
                               filled: false,
                             ),
-                            items: snapshot.data?.docs.map((student) {
+                            items: snapshot.data?.docs.where((e) => e.get('examActive') == false).map((student) {
                               return DropdownMenuItem(
                                 child: Text(
-                                    "${student.get('snumber')} [${student.get('firstname')} ${student.get('lastname')}]"),
-                                value: student.get('id').toString(),
+                                    "${student.get('sNumber')} [${student.get('firstName')} ${student.get('lastName')}]"),
+                                value: student.get('id'),
                               );
                             }).toList(),
                             onChanged: (value) {
@@ -102,7 +81,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                                 _isButtonDisabled = false;
                               });
                             },
-                            value: studentId,
+                            value: snapshot.data?.docs.where((e) => e.get('examActive') == false).toList().where((e) => e.id == studentId).length == 1 ? studentId : null,
                           );
                         }
                       },
@@ -112,10 +91,13 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
                           onPressed: _isButtonDisabled ? null : () {
+                            setState(() {
+                              _isButtonDisabled = true;
+                            });
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => QuestionsScreen(currentStudentId: studentId)),
+                                builder: (context) => QuestionsScreen(currentStudentId: studentId)),
                             );
                           },
                           style: ButtonStyle(
@@ -139,4 +121,5 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       ),
     );
   }
+
 }

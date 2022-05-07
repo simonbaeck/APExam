@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:csv/csv.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/admin/studenten/student.class.dart';
@@ -128,9 +129,10 @@ class _AddMultipleStudentState extends State<AddMultipleStudent> {
       final docStudent = FirebaseFirestore.instance.collection('studenten').doc();
       Student student = Student();
       student.id = docStudent.id;
-      student.firstname = item[0];
-      student.lastname = item[1];
-      student.snumber = item[2];
+      student.firstName = item[0];
+      student.lastName = item[1];
+      student.sNumber = item[2];
+
       docStudent.set(student.toMap()).whenComplete(() {
         student = Student();
         counter2++;
