@@ -6,6 +6,7 @@ import 'package:flutter_project/admin/studenten/student.class.dart';
 import 'package:flutter_project/admin/studenten/studentdetail.dart';
 import 'package:flutter_project/services/loadingscreen.dart';
 import 'package:flutter_project/student/questiondetail.dart';
+import 'package:flutter_project/student/studentlogin.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:geolocator/geolocator.dart';
@@ -35,7 +36,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         height: double.infinity,
         child: Align(
           alignment: Alignment.topLeft,
-          child: Column(
+          child: ListView(
             children: [
               StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance
@@ -52,7 +53,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                         ? Expanded(
                             child: ListView.builder(
                               padding: const EdgeInsets.fromLTRB(
-                                  26.0, 30.0, 26.0, 30.0),
+                                  30.0, 45.0, 30.0, 30.0),
                               shrinkWrap: true,
                               controller: ScrollController(),
                               itemCount: snapshot.data!.docs.length,
@@ -92,6 +93,27 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                           );
                   }
                 },
+              ),
+              Container(
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => StudentLoginScreen()),
+                      );
+                    },
+                    style: ButtonStyle(
+                      textStyle: MaterialStateProperty.all(
+                        const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 65)),
+                    ),
+                    child: Text("Examen afronden".toUpperCase())),
               ),
             ],
           ),
