@@ -3,12 +3,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:flutter_project/student/answer.class.dart';
 
 import '../../styles/styles.dart';
+import '../services/toaster.dart';
 
 class QuestionDetail extends StatefulWidget {
   final DocumentSnapshot question;
-  const QuestionDetail({Key? key, required this.question}) : super(key: key);
+  final String currentStudentId;
+  const QuestionDetail(
+      {Key? key, required this.currentStudentId, required this.question})
+      : super(key: key);
 
   @override
   State<QuestionDetail> createState() => _QuestionDetailState();
@@ -22,7 +27,7 @@ class _QuestionDetailState extends State<QuestionDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Question"),
+        title: Text("Vraag"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
@@ -45,26 +50,50 @@ class _QuestionDetailState extends State<QuestionDetail> {
             Container(
               width: double.infinity,
               child: Text(
-                "Answer:",
+                "Antwoord:",
                 style: Styles.textColorBlack,
               ),
             ),
             const SizedBox(height: 20.0),
-            TextFormField(
-              controller: answerController,
-              style: const TextStyle(fontSize: 20),
-              keyboardType: TextInputType.text,
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: " ",
+            if (widget.question["type"] == "open")
+              TextFormField(
+                controller: answerController,
+                style: const TextStyle(fontSize: 20),
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Antwoord",
+                ),
               ),
-            ),
+            if (widget.question["type"] == "correctie")
+              TextFormField(
+                controller: answerController,
+                style: const TextStyle(fontSize: 20),
+                keyboardType: TextInputType.text,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Antwoord",
+                ),
+              ),
+            if (widget.question["type"] == "multiplechoice")
+              SizedBox(
+                height: 200.0,
+                child: new ListView.builder(
+                  itemCount: (widget.question["antwoorden"]).length,
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text("${widget.question["antwoorden"]}"),
+                    );
+                  },
+                ),
+              ),
             const SizedBox(height: 20.0),
             Container(
               alignment: Alignment.topLeft,
               child: ElevatedButton(
                   onPressed: () {
-                    final oplossing = answerController.text;
+                    final antwoord = answerController.text;
+                    addAnswer(antwoord: antwoord);
                   },
                   style: ButtonStyle(
                     textStyle: MaterialStateProperty.all(
@@ -76,11 +105,25 @@ class _QuestionDetailState extends State<QuestionDetail> {
                     minimumSize: MaterialStateProperty.all(
                         const Size(double.infinity, 65)),
                   ),
-                  child: Text("Answer".toUpperCase())),
+                  child: Text("Beantwoord".toUpperCase())),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Future addAnswer({required String antwoord}) async {
+    final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
+    final Answer answer = Answer();
+    answer.id = docAnswer.id;
+    answer.studentId = widget.currentStudentId;
+    answer.questionId = widget.question.id;
+    answer.answer = antwoord;
+
+    await docAnswer.set(answer.toMap()).then((res) {
+      Toaster().showToastMsg("antwoord toegevoegd");
+      Navigator.of(context).pop();
+    });
   }
 }

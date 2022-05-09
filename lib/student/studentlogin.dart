@@ -57,7 +57,9 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                 child: Column(
                   children: <Widget>[
                     StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance.collection('studenten').snapshots(),
+                      stream: FirebaseFirestore.instance
+                          .collection('studenten')
+                          .snapshots(),
                       builder: (context, snapshot) {
                         if (!snapshot.hasData) {
                           _isButtonDisabled = true;
@@ -68,7 +70,9 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                               border: OutlineInputBorder(),
                               filled: false,
                             ),
-                            items: snapshot.data?.docs.where((e) => e.get('examActive') == false).map((student) {
+                            items: snapshot.data?.docs
+                                .where((e) => e.get('examActive') == false)
+                                .map((student) {
                               return DropdownMenuItem(
                                 child: Text(
                                     "${student.get('sNumber')} [${student.get('firstName')} ${student.get('lastName')}]"),
@@ -81,7 +85,15 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                                 _isButtonDisabled = false;
                               });
                             },
-                            value: snapshot.data?.docs.where((e) => e.get('examActive') == false).toList().where((e) => e.id == studentId).length == 1 ? studentId : null,
+                            value: snapshot.data?.docs
+                                        .where(
+                                            (e) => e.get('examActive') == false)
+                                        .toList()
+                                        .where((e) => e.id == studentId)
+                                        .length ==
+                                    1
+                                ? studentId
+                                : null,
                           );
                         }
                       },
@@ -90,16 +102,19 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-                          onPressed: _isButtonDisabled ? null : () {
-                            setState(() {
-                              _isButtonDisabled = true;
-                            });
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => QuestionsScreen(currentStudentId: studentId)),
-                            );
-                          },
+                          onPressed: _isButtonDisabled
+                              ? null
+                              : () {
+                                  setState(() {
+                                    _isButtonDisabled = true;
+                                  });
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => QuestionsScreen(
+                                            currentStudentId: studentId)),
+                                  );
+                                },
                           style: ButtonStyle(
                             textStyle: MaterialStateProperty.all(
                               const TextStyle(
@@ -121,5 +136,4 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
       ),
     );
   }
-
 }

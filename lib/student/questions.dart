@@ -14,7 +14,8 @@ import '../../services/toaster.dart';
 
 class QuestionsScreen extends StatefulWidget {
   final String? currentStudentId;
-  const QuestionsScreen({Key? key, required this.currentStudentId}) : super(key: key);
+  const QuestionsScreen({Key? key, required this.currentStudentId})
+      : super(key: key);
 
   @override
   State<QuestionsScreen> createState() => _QuestionsScreenState();
@@ -27,7 +28,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Questions " + widget.currentStudentId.toString()),
+        title: Text("Vragen " + widget.currentStudentId.toString()),
       ),
       body: Container(
         width: double.infinity,
@@ -47,42 +48,48 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                   } else if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());
                   } else {
-                    return snapshot.data!.docs.isNotEmpty ? Expanded(
-                      child: ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(
-                            26.0, 30.0, 26.0, 30.0),
-                        shrinkWrap: true,
-                        controller: ScrollController(),
-                        itemCount: snapshot.data!.docs.length,
-                        itemBuilder: (context, index) {
-                          DocumentSnapshot ds =
-                              snapshot.data!.docs[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        QuestionDetail(question: ds)),
-                              );
-                            },
-                            child: Card(
+                    return snapshot.data!.docs.isNotEmpty
+                        ? Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(
+                                  26.0, 30.0, 26.0, 30.0),
+                              shrinkWrap: true,
+                              controller: ScrollController(),
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot ds =
+                                    snapshot.data!.docs[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => QuestionDetail(
+                                                question: ds,
+                                                currentStudentId: widget
+                                                    .currentStudentId
+                                                    .toString(),
+                                              )),
+                                    );
+                                  },
+                                  child: Card(
+                                    child: ListTile(
+                                      title: Text("${ds["vraag"]}"),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : Container(
+                            padding: const EdgeInsets.fromLTRB(
+                                26.0, 30.0, 26.0, 30.0),
+                            child: const Card(
                               child: ListTile(
-                                title: Text("${ds["vraag"]}"),
+                                title: Text("Er zijn geen vragen gevonden"),
                               ),
                             ),
                           );
-                        },
-                      ),
-                    ) : Container(
-                      padding: const EdgeInsets.fromLTRB(
-                          26.0, 30.0, 26.0, 30.0),
-                      child: const Card(
-                        child: ListTile(
-                          title: Text("Er zijn geen vragen gevonden"),
-                        ),
-                      ),
-                    );
                   }
                 },
               ),
@@ -100,17 +107,20 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   }
 
   Future updateStudent({required String? studentId}) async {
-    final docStudent = FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    final docStudent =
+        FirebaseFirestore.instance.collection("studenten").doc(studentId);
     // Update examen afgelegd
     docStudent.update({"examActive": true}).catchError((e) => print(e));
     // Update locatie
     getCurrentLocation().then((Position position) => {
-      docStudent.update({"studentLocation": GeoPoint(position.latitude, position.longitude)}).catchError((e) => print(e))
-    });
+          docStudent.update({
+            "studentLocation": GeoPoint(position.latitude, position.longitude)
+          }).catchError((e) => print(e))
+        });
   }
 
   Future<Position> getCurrentLocation() {
-    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+    return Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
   }
-
 }
