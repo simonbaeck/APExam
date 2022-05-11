@@ -1,9 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/styles/styles.dart';
-
 import 'package:flutter_project/student/questions.dart';
-
 import '../admin/studenten/student.class.dart';
 
 class StudentLoginScreen extends StatefulWidget {

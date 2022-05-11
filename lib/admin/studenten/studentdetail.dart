@@ -38,8 +38,16 @@ class _StudentDetailState extends State<StudentDetail> {
               width: double.infinity,
               height: 250.0,
               alignment: Alignment.topLeft,
+              margin: const EdgeInsets.fromLTRB(4.0, 0.0, 4.0, 0.0),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 4,
+                  color: Styles.APred.shade900,
+                ),
+                borderRadius: const BorderRadius.all(Radius.circular(11.0)),
+              ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: const BorderRadius.all(Radius.circular(9.0)),
                 child: FlutterMap(
                   options: MapOptions(
                     center: LatLng(position.latitude, position.longitude),
@@ -69,20 +77,40 @@ class _StudentDetailState extends State<StudentDetail> {
                     MarkerLayerOptions(
                       markers: [
                         Marker(
-                          height: 35.0,
-                          width: 35.0,
+                          height: 25.0,
+                          width: 25.0,
                           point: LatLng(position.latitude, position.longitude),
                           builder: (context) => Container(
                             child: Icon(
-                              Icons.location_on,
+                              Icons.gps_fixed,
                               color: Styles.APred[900],
-                              size: 35.0,
+                              size: 25.0,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 6.0),
+            Container(
+              width: double.infinity,
+              alignment: Alignment.topLeft,
+              child: const Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                ),
+                color: Styles.APred,
+                child: ListTile(
+                  title: Text(
+                    "Deze student heeft het examen 0 keer verlaten",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18.0,
+                    ),
+                  )
                 ),
               ),
             ),
@@ -94,6 +122,32 @@ class _StudentDetailState extends State<StudentDetail> {
                 children: [
                   Text(
                     widget.student["firstName"].toString() + " " + widget.student["lastName"].toString(),
+                    style: Styles.headerStyleH1,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            Container(
+              width: double.infinity,
+              alignment: Alignment.topLeft,
+              child: Column(
+                children: [
+                  Text(
+                    "Antwoorden",
+                    style: Styles.headerStyleH1,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20.0),
+            Container(
+              width: double.infinity,
+              alignment: Alignment.topLeft,
+              child: Column(
+                children: [
+                  Text(
+                    "Punten",
                     style: Styles.headerStyleH1,
                   ),
                 ],
