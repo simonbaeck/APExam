@@ -110,7 +110,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => QuestionsScreen(
-                                            currentStudentId: studentId)),
+                                            /*currentStudentId: studentId*/)),
                                   );
                                 },
                           style: ButtonStyle(
