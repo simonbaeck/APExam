@@ -100,23 +100,6 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                     Container(
                       alignment: Alignment.topLeft,
                       child: ElevatedButton(
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-                        onPressed: _isButtonDisabled ? null : () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const QuestionsScreen()),
-                          );
-                        },
-                        style: ButtonStyle(
-                          textStyle: MaterialStateProperty.all(
-                            const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-=======
->>>>>>> Stashed changes
                           onPressed: _isButtonDisabled
                               ? null
                               : () {
@@ -126,13 +109,8 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-<<<<<<< Updated upstream
                                         builder: (context) => QuestionsScreen(
                                             currentStudentId: studentId)),
-=======
-                                        builder: (context) => QuestionScreen(
-                                            /*currentStudentId: studentId*/)),
->>>>>>> Stashed changes
                                   );
                                 },
                           style: ButtonStyle(
@@ -141,10 +119,6 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                               ),
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
                             ),
                             minimumSize: MaterialStateProperty.all(
                                 const Size(double.infinity, 65)),
