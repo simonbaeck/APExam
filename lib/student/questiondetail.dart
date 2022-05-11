@@ -20,7 +20,6 @@ class QuestionDetail extends StatefulWidget {
 }
 
 class _QuestionDetailState extends State<QuestionDetail> {
-  bool isChecked = false;
   final answerController = TextEditingController();
 
   @override
@@ -77,13 +76,14 @@ class _QuestionDetailState extends State<QuestionDetail> {
               ),
             if (widget.question["type"] == "multiplechoice")
               SizedBox(
-                height: 200.0,
-                child: new ListView.builder(
+                height: 400.0,
+                child: ListView.builder(
                   itemCount: (widget.question["antwoorden"]).length,
                   itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text("${widget.question["antwoorden"]}"),
-                    );
+                    return CheckboxListTile(
+                        title: Text("${widget.question["antwoorden"][index]}"),
+                        value: false,
+                        onChanged: (bool? val) {});
                   },
                 ),
               ),
