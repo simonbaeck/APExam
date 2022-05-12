@@ -20,9 +20,21 @@ class Question {
         'studentId': studentId,
       };
 
-  static Question fromJson(Map<String, dynamic> json) => Question(
-      id: json['id'],
-      type: json['type'],
-      vraag: json['vraag'],
-      antwoorden: List.from(json['antwoorden']));
+  static Question fromJson(Map<String, dynamic> json) {
+    if (json['antwoorden'] != null) {
+      print(json['antwoorden']);
+      return Question(
+          id: json['id'],
+          type: json['type'],
+          vraag: json['vraag'],
+          antwoorden: List.from(json['antwoorden']));
+    } else {
+      print(json['antwoord']);
+      return Question(
+          id: json['id'],
+          type: json['type'],
+          vraag: json['vraag'],
+          antwoorden: [""]);
+    }
+  }
 }
