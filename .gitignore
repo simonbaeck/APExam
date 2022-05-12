@@ -49,3 +49,5 @@ app.*.map.json
 /android
 /ios
 /web
+
+*.zip
