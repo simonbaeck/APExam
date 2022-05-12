@@ -106,7 +106,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              addAnswer(question: questions[index]);
+              addAnswer(question: questions[index], open: true);
               _answerQuestion();
             },
             child: const Text('Beantwoorden'),
@@ -146,7 +146,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              addAnswer(question: questions[index]);
+              addAnswer(question: questions[index], open: true);
               _answerQuestion();
             },
             child: const Text('Beantwoorden'),
@@ -211,7 +211,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     );
   }
 
-  Future addAnswer({required Question question}) async {
+  Future addAnswer({required Question question, required bool open}) async {
     final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
     final Question _question = question;
 
@@ -219,8 +219,14 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     _question.antwoord = textFieldController.text;
 
     ///Add to database
-    /*await docAnswer.set(question.toJson()).then((res) {
-      Toaster().showToastMsg("vraag beantwoord");
-    });*/
+    if (open) {
+      await docAnswer.set(question.toJsonOpen()).then((res) {
+        Toaster().showToastMsg("vraag beantwoord");
+      });
+    } else {
+      await docAnswer.set(question.toJsonMultiple()).then((res) {
+        Toaster().showToastMsg("vraag beantwoord");
+      });
+    }
   }
 }

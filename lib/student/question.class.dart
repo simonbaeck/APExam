@@ -14,7 +14,15 @@ class Question {
     required this.antwoorden,
   });
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJsonOpen() => {
+        'type': "open",
+        'antwoord': antwoord,
+        'questionId': id,
+        'studentId': studentId,
+      };
+
+  Map<String, dynamic> toJsonMultiple() => {
+        'type': "multiple",
         'antwoord': antwoord,
         'questionId': id,
         'studentId': studentId,
