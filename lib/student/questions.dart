@@ -10,7 +10,9 @@ import '../../services/toaster.dart';
 import '../styles/styles.dart';
 
 class QuestionsScreen extends StatefulWidget {
-  const QuestionsScreen({Key? key}) : super(key: key);
+  final String? currentStudentId;
+  const QuestionsScreen({Key? key, required this.currentStudentId})
+      : super(key: key);
 
   @override
   State<QuestionsScreen> createState() => _QuestionsScreenState();
@@ -25,13 +27,24 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   var _questionIndex = 0;
   late List<Question> questions = [];
+  final textFieldController = TextEditingController();
 
   void _answerQuestion() {
     setState(() {
       if (_questionIndex != (questions.length - 1)) {
         _questionIndex = _questionIndex + 1;
+      } else {
+        Navigator.of(context).pop();
       }
+      textFieldController.text = "";
     });
+
+    @override
+    void dispose() {
+      // Clean up the controller when the widget is disposed.
+      textFieldController.dispose();
+      super.dispose();
+    }
   }
 
   @override
@@ -65,17 +78,25 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             questions[index].vraag,
             style: Styles.headerStyleH1,
           ),
+          const SizedBox(
+            height: 20,
+          ),
           TextField(
+            controller: textFieldController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Antwoord',
             ),
           ),
+          const SizedBox(
+            height: 20,
+          ),
           ElevatedButton(
             onPressed: () {
+              addAnswer(question: questions[index]);
               _answerQuestion();
             },
-            child: const Text('Next'),
+            child: const Text('Beantwoorden'),
           )
         ],
       ),
@@ -87,20 +108,35 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       child: Column(
         children: [
           Text(
-            questions[index].vraag,
+            'Corrigeer volgende code:',
             style: Styles.headerStyleH1,
           ),
+          const SizedBox(
+            height: 20,
+          ),
+          Text(
+            questions[index].vraag,
+            style: Styles.textColorBlack,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
           TextField(
+            controller: textFieldController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
               labelText: 'Correctie',
             ),
           ),
+          const SizedBox(
+            height: 20,
+          ),
           ElevatedButton(
             onPressed: () {
+              addAnswer(question: questions[index]);
               _answerQuestion();
             },
-            child: const Text('Next'),
+            child: const Text('Beantwoorden'),
           )
         ],
       ),
@@ -125,10 +161,23 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             onPressed: () {
               _answerQuestion();
             },
-            child: const Text('Next'),
+            child: const Text('Beantwoorden'),
           )
         ],
       ),
     );
+  }
+
+  Future addAnswer({required Question question}) async {
+    final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
+    final Question _question = question;
+
+    _question.studentId = widget.currentStudentId!;
+    _question.antwoord = textFieldController.text;
+
+    ///Add to database
+    /*await docAnswer.set(question.toJson()).then((res) {
+      Toaster().showToastMsg("antwoord toegevoegd");
+    });*/
   }
 }
