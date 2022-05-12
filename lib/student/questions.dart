@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:flutter_project/admin/examens/codecorrectie/correctievraag.class.dart';
 import 'package:flutter_project/admin/studenten/addmultiplestudent.dart';
 import 'package:flutter_project/admin/studenten/addstudent.dart';
@@ -34,6 +36,17 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       if (_questionIndex != (questions.length - 1)) {
         _questionIndex = _questionIndex + 1;
       } else {
+        Fluttertoast.showToast(
+          msg: "Examen voltooid",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          textColor: Colors.black,
+          backgroundColor: Styles.APred.shade900,
+          webPosition: "center",
+          webBgColor: "#e0e0e0",
+          timeInSecForIosWeb: 3,
+        );
+        ;
         Navigator.of(context).pop();
       }
       textFieldController.text = "";
@@ -143,22 +156,52 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     );
   }
 
-  Widget multipleChoiceQuestion(List<Question> questions, int index) {
+  Widget multipleChoiceQuestion(List<Question> questions, int Index) {
+    final List checked = [];
+    bool isChecked = true;
+
+    void _onAnswerSelected(bool selected, antwoord) {
+      if (selected == true) {
+        setState(() {
+          checked.add(antwoord);
+        });
+      } else {
+        setState(() {
+          checked.remove(antwoord);
+        });
+      }
+    }
+
     return Container(
       child: Column(
         children: [
+          const SizedBox(
+            height: 20,
+          ),
           Text(
-            questions[index].vraag,
+            questions[Index].vraag,
             style: Styles.headerStyleH1,
           ),
-          TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'multiple',
-            ),
+          ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: questions[Index].antwoorden.length,
+            itemBuilder: (context, index) {
+              return CheckboxListTile(
+                  title: Text(questions[Index].antwoorden[index]),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  selectedTileColor: Styles.APred.shade50,
+                  value: isChecked,
+                  onChanged: (value) {
+                    setState(() {
+                      isChecked = value!;
+                    });
+                  });
+            },
           ),
           ElevatedButton(
             onPressed: () {
+              print(checked);
               _answerQuestion();
             },
             child: const Text('Beantwoorden'),
@@ -177,7 +220,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
     ///Add to database
     /*await docAnswer.set(question.toJson()).then((res) {
-      Toaster().showToastMsg("antwoord toegevoegd");
+      Toaster().showToastMsg("vraag beantwoord");
     });*/
   }
 }

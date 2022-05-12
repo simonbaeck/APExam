@@ -5,13 +5,13 @@ class Question {
   late String vraag;
   late String studentId;
   late String antwoord;
-  late List<String> antwoorden;
+  late List<String> antwoorden = [];
 
   Question({
     required this.id,
     required this.type,
     required this.vraag,
-    antwoorden,
+    required this.antwoorden,
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,5 +24,5 @@ class Question {
       id: json['id'],
       type: json['type'],
       vraag: json['vraag'],
-      antwoorden: json['antwoorden']);
+      antwoorden: List.from(json['antwoorden']));
 }

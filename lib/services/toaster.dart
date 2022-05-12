@@ -4,7 +4,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import '../styles/styles.dart';
 
 class Toaster {
-
   showToastMsg(message) {
     Fluttertoast.showToast(
       msg: message!,
@@ -16,5 +15,4 @@ class Toaster {
       webBgColor: "#e0e0e0",
     );
   }
-
 }
