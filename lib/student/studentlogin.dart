@@ -84,12 +84,12 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                               });
                             },
                             value: snapshot.data?.docs
-                                        .where(
-                                            (e) => e.get('examActive') == false)
-                                        .toList()
-                                        .where((e) => e.id == studentId)
-                                        .length ==
-                                    1
+                                .where(
+                                    (e) => e.get('examActive') == false)
+                                .toList()
+                                .where((e) => e.id == studentId)
+                                .length ==
+                                1
                                 ? studentId
                                 : null,
                           );
@@ -103,16 +103,16 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                           onPressed: _isButtonDisabled
                               ? null
                               : () {
-                                  setState(() {
-                                    _isButtonDisabled = true;
-                                  });
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => QuestionsScreen(
-                                            currentStudentId: studentId)),
-                                  );
-                                },
+                            setState(() {
+                              _isButtonDisabled = true;
+                            });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => QuestionsScreen(
+                                      currentStudentId: studentId)),
+                            );
+                          },
                           style: ButtonStyle(
                             textStyle: MaterialStateProperty.all(
                               const TextStyle(
