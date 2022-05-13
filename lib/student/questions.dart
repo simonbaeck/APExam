@@ -25,7 +25,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       .collection('vragen')
       .snapshots()
       .map((snapshot) =>
-          snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList());
+      snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList());
 
   var _questionIndex = 0;
   late List<Question> questions = [];
@@ -62,26 +62,26 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('Questions'),
-        ),
-        body: StreamBuilder<List<Question>>(
-            stream: readQuestions(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                questions = snapshot.data!;
-                if (questions[_questionIndex].type == "open") {
-                  return openQuestion(questions, _questionIndex);
-                } else if (questions[_questionIndex].type == "correctie") {
-                  return correctionQuestion(questions, _questionIndex);
-                } else {
-                  return multipleChoiceQuestion(questions, _questionIndex);
-                }
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            }),
-      );
+    appBar: AppBar(
+      title: Text('Questions'),
+    ),
+    body: StreamBuilder<List<Question>>(
+        stream: readQuestions(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            questions = snapshot.data!;
+            if (questions[_questionIndex].type == "open") {
+              return openQuestion(questions, _questionIndex);
+            } else if (questions[_questionIndex].type == "correctie") {
+              return correctionQuestion(questions, _questionIndex);
+            } else {
+              return multipleChoiceQuestion(questions, _questionIndex);
+            }
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        }),
+  );
 
   Widget openQuestion(List<Question> questions, int index) {
     return Container(
@@ -209,6 +209,30 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateStudent(studentId: widget.currentStudentId);
+  }
+
+  Future updateStudent({required String? studentId}) async {
+    final docStudent =
+    FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    // Update examen afgelegd
+    docStudent.update({"examActive": true}).catchError((e) => print(e));
+    // Update locatie
+    getCurrentLocation().then((Position position) => {
+      docStudent.update({
+        "studentLocation": GeoPoint(position.latitude, position.longitude)
+      }).catchError((e) => print(e))
+    });
+  }
+
+  Future<Position> getCurrentLocation() {
+    return Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
   }
 
   Future addAnswer({required Question question, required bool open}) async {
