@@ -2,10 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_project/admin/studenten/points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../services/loader.dart';
 import '../../styles/styles.dart';
+import 'answer.class.dart';
 
 class StudentDetail extends StatefulWidget {
   final DocumentSnapshot student;
@@ -17,6 +20,14 @@ class StudentDetail extends StatefulWidget {
 
 class _StudentDetailState extends State<StudentDetail> {
   late GeoPoint position;
+
+  Stream<List<Answer>> readAnswers() => FirebaseFirestore.instance
+      .collection('antwoorden')
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => Answer.fromJson(doc.data())).toList());
+
+  late List<Answer> answers = [];
 
   @override
   void initState() {
@@ -57,21 +68,23 @@ class _StudentDetailState extends State<StudentDetail> {
                   ),
                   layers: [
                     TileLayerOptions(
-                      minZoom: 17,
-                      maxZoom: 17,
-                      backgroundColor: Colors.white,
-                      urlTemplate: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: ['a', 'b', 'c']
-                    ),
+                        minZoom: 17,
+                        maxZoom: 17,
+                        backgroundColor: Colors.white,
+                        urlTemplate:
+                            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        subdomains: ['a', 'b', 'c']),
                     CircleLayerOptions(
                       circles: [
-                        CircleMarker( //radius marker
-                            point: LatLng(position.latitude, position.longitude),
+                        CircleMarker(
+                            //radius marker
+                            point:
+                                LatLng(position.latitude, position.longitude),
                             color: Styles.APred.withOpacity(0.15),
                             borderStrokeWidth: 2.0,
                             borderColor: Styles.APred.withOpacity(0.35),
                             radius: 75 //radius
-                        ),
+                            ),
                       ],
                     ),
                     MarkerLayerOptions(
@@ -104,14 +117,13 @@ class _StudentDetailState extends State<StudentDetail> {
                 ),
                 color: Styles.APred,
                 child: ListTile(
-                  title: Text(
-                    "Deze student heeft het examen 0 keer verlaten",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18.0,
-                    ),
-                  )
-                ),
+                    title: Text(
+                  "Deze student heeft het examen 0 keer verlaten",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                  ),
+                )),
               ),
             ),
             const SizedBox(height: 20.0),
@@ -121,7 +133,9 @@ class _StudentDetailState extends State<StudentDetail> {
               child: Column(
                 children: [
                   Text(
-                    widget.student["firstName"].toString() + " " + widget.student["lastName"].toString(),
+                    widget.student["firstName"].toString() +
+                        " " +
+                        widget.student["lastName"].toString(),
                     style: Styles.headerStyleH1,
                   ),
                 ],
@@ -137,6 +151,24 @@ class _StudentDetailState extends State<StudentDetail> {
                     "Antwoorden",
                     style: Styles.headerStyleH1,
                   ),
+                ],
+              ),
+            ),
+            Container(
+              height: 300,
+              child: ListView(
+                children: [
+                  StreamBuilder<List<Answer>>(
+                      stream: readAnswers(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          answers = snapshot.data!;
+                          return answersList(answers, widget.student.id);
+                        } else {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                      }),
                 ],
               ),
             ),
@@ -157,5 +189,44 @@ class _StudentDetailState extends State<StudentDetail> {
         ),
       ),
     );
+  }
+}
+
+Widget answersList(List<Answer> answers, String currentStudent) {
+  List<Answer> studentAnswers = [];
+  for (var answer in answers) {
+    if (currentStudent == answer.studentId) {
+      studentAnswers.add(answer);
+    }
+  }
+  if (studentAnswers.isNotEmpty) {
+    checkCorrection("Debug.Log('Hello World') ", "Debug.Log('Hello World') ");
+    return Container(
+      child: Column(
+        children: [
+          ListView.builder(
+            padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
+            shrinkWrap: true,
+            controller: ScrollController(),
+            itemCount: studentAnswers.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                child: Card(
+                  child: ListTile(
+                    title: Text(studentAnswers[index].studentId),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  } else {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
+        child: Card(
+          child: ListTile(title: Text("Geen antwoorden gevonden.")),
+        ));
   }
 }
