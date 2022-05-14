@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/questions.dart';
 import 'package:flutter_project/styles/styles.dart';
-import 'package:flutter_project/student/questions/questions.dart';
 import '../admin/studenten/student.class.dart';
 
 class StudentLoginScreen extends StatefulWidget {
@@ -15,6 +14,11 @@ class StudentLoginScreen extends StatefulWidget {
 class _StudentLoginScreenState extends State<StudentLoginScreen> {
   bool _isButtonDisabled = true;
   String? studentId;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -64,36 +68,48 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                           _isButtonDisabled = true;
                           return const CircularProgressIndicator();
                         } else {
-                          return DropdownButtonFormField(
-                            decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              filled: false,
-                            ),
-                            items: snapshot.data?.docs
-                                .where((e) => e.get('examActive') == false)
-                                .map((student) {
-                              return DropdownMenuItem(
-                                child: Text(
-                                    "${student.get('sNumber')} [${student.get('firstName')} ${student.get('lastName')}]"),
-                                value: student.get('id'),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                studentId = value.toString();
-                                _isButtonDisabled = false;
-                              });
-                            },
-                            value: snapshot.data?.docs
-                                        .where(
-                                            (e) => e.get('examActive') == false)
-                                        .toList()
-                                        .where((e) => e.id == studentId)
-                                        .length ==
-                                    1
-                                ? studentId
-                                : null,
-                          );
+                          if (snapshot.data?.docs.where((e) => e.get('examActive') == false).toList().isEmpty == true) {
+                            return Container(
+                              width: double.infinity,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text(
+                                    "Alle studenten hebben het examen afgelegd, of het examen is afgelopen!",
+                                    style: TextStyle(
+                                      color: Styles.APred,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16.0,
+                                    ),
+                                  )
+                                ],
+                              ),
+                            );
+                          } else {
+                            return DropdownButtonFormField(
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                filled: false,
+                              ),
+                              items: snapshot.data?.docs
+                                  .where((e) => e.get('examActive') == false)
+                                  .map((student) {
+                                return DropdownMenuItem(
+                                  child: Text(
+                                      "${student.get('sNumber')} [${student.get('firstName')} ${student.get('lastName')}]"),
+                                  value: student.get('id'),
+                                );
+                              }).toList(),
+                              onChanged: (value) {
+                                setState(() {
+                                  studentId = value.toString();
+                                  _isButtonDisabled = false;
+                                });
+                              },
+                              value: snapshot.data?.docs.where((e) => e.get('examActive') == false).toList().where((e) => e.id == studentId).length == 1 ? studentId : null,
+                            );
+                          }
                         }
                       },
                     ),
@@ -104,16 +120,16 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                           onPressed: _isButtonDisabled
                               ? null
                               : () {
-                                  setState(() {
-                                    _isButtonDisabled = true;
-                                  });
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => QuestionsScreen(
-                                            currentStudentId: studentId)),
-                                  );
-                                },
+                            setState(() {
+                              _isButtonDisabled = true;
+                            });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => QuestionsScreen(
+                                      currentStudentId: studentId)),
+                            );
+                          },
                           style: ButtonStyle(
                             textStyle: MaterialStateProperty.all(
                               const TextStyle(
