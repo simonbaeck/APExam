@@ -152,8 +152,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       ///Add to database
       if (_question.type == 'multiplechoice') {
         await docAnswer.set(question.toJsonMultiple()).then((res) {});
-      } else {
+      } else if (_question.type == 'open') {
         await docAnswer.set(question.toJsonOpen()).then((res) {});
+      } else if (_question.type == 'correction') {
+        await docAnswer.set(question.toJsonCorrection()).then((res) {});
       }
     }
     Toaster().showToastMsg("Examen ingediend");

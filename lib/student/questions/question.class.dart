@@ -6,6 +6,7 @@ class Question {
   late String studentId;
   late String antwoord = "";
   late List<String> antwoorden = [];
+  late List<String> antwoordenSelected = [];
 
   Question({
     required this.id,
@@ -15,7 +16,14 @@ class Question {
   });
 
   Map<String, dynamic> toJsonOpen() => {
-        'type': "open",
+        'type': 'open',
+        'antwoord': antwoord,
+        'questionId': id,
+        'studentId': studentId,
+      };
+
+  Map<String, dynamic> toJsonCorrection() => {
+        'type': 'correctie',
         'antwoord': antwoord,
         'questionId': id,
         'studentId': studentId,
@@ -23,7 +31,7 @@ class Question {
 
   Map<String, dynamic> toJsonMultiple() => {
         'type': "multiple",
-        'antwoord': antwoord,
+        'antwoorden': antwoordenSelected,
         'questionId': id,
         'studentId': studentId,
       };
@@ -46,5 +54,9 @@ class Question {
 
   addAnswer(String answer) {
     antwoord = answer;
+  }
+
+  addAnswers(List<String> answers) {
+    antwoordenSelected = answers;
   }
 }

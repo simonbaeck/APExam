@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/question.class.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 
 class MultipleChoiceQuestion extends StatefulWidget {
@@ -24,33 +25,49 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
       );
 
   late List<bool> _isSelected = [];
-  late Set _saved = Set();
+  late Set<String> _saved = Set();
 
   @override
   Widget multipleChoiceQuestion() {
-    return Scaffold(
-      body: ListView.builder(
-        itemCount: widget.question.antwoorden.length,
-        itemBuilder: (context, index) {
-          _isSelected.add(false);
-          return CheckboxListTile(
-            title: Text(widget.question.antwoorden[index]),
-            checkColor: Colors.indigo,
-            value: _isSelected[index],
-            onChanged: (bool? newValue) {
-              setState(() {
-                if (_isSelected[index] == false) {
-                  _saved.add(widget.question.antwoorden[index]);
-                } else {
-                  _saved.remove(widget.question.antwoorden[index]);
-                }
-                print(_saved);
-                _isSelected[index] = newValue!;
-              });
-            },
-          );
-        },
-      ),
-    );
+    return Container(
+        child: Column(
+      children: [
+        ListView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: widget.question.antwoorden.length,
+          itemBuilder: (context, index) {
+            _isSelected.add(false);
+            return CheckboxListTile(
+              title: Text(widget.question.antwoorden[index]),
+              checkColor: Colors.indigo,
+              value: _isSelected[index],
+              onChanged: (bool? newValue) {
+                setState(() {
+                  if (_isSelected[index] == false) {
+                    _saved.add(widget.question.antwoorden[index]);
+                  } else {
+                    _saved.remove(widget.question.antwoorden[index]);
+                  }
+                  print(_saved);
+                  _isSelected[index] = newValue!;
+                });
+              },
+            );
+          },
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            widget.question.addAnswers(_saved.toList());
+            Toaster().showToastMsg("Vraag beantwoord");
+            Navigator.of(context).pop();
+          },
+          child: const Text('Beantwoorden'),
+        )
+      ],
+    ));
   }
 }
