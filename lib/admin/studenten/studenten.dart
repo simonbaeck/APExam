@@ -109,7 +109,7 @@ class _StudentenScreenState extends State<StudentenScreen> {
         ),
       ),
       floatingActionButton: SpeedDial(
-        icon: Icons.add,
+        icon: Icons.settings,
         activeIcon: Icons.close,
         backgroundColor: Styles.APred[900],
         overlayColor: Colors.black,

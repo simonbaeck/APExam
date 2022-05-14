@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/questions.dart';
 import 'package:flutter_project/styles/styles.dart';
+import 'package:flutter_project/student/questions.dart';
+import 'package:simple_timer/simple_timer.dart';
 import '../admin/studenten/student.class.dart';
 
 class StudentLoginScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
   @override
   void initState() {
     super.initState();
+    getExtraTime();
   }
 
   @override
@@ -150,5 +153,23 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
         ),
       ),
     );
+  }
+
+  Widget buildTimer() {
+    return
+  }
+
+  Future<bool> getExtraTime() async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference = collectionReference.doc("0DfDwQsTHcCQNarYbT8O");
+    Future<DocumentSnapshot> docSnapshot = documentReference.get();
+
+    return await docSnapshot.then((data) {
+      if (data['extraTime'] == false) {
+        return false;
+      } else {
+        return true;
+      }
+    });
   }
 }
