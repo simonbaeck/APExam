@@ -49,7 +49,6 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
                   } else {
                     _saved.remove(widget.question.antwoorden[index]);
                   }
-                  print(_saved);
                   _isSelected[index] = newValue!;
                 });
               },

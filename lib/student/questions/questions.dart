@@ -25,38 +25,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       .map((snapshot) =>
           snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList());
 
-  var _questionIndex = 0;
   late List<Question> questions = [];
   final textFieldController = TextEditingController();
-
-  void _answerQuestion() {
-    setState(() {
-      if (_questionIndex != (questions.length - 1)) {
-        _questionIndex = _questionIndex + 1;
-      } else {
-        Fluttertoast.showToast(
-          msg: "Examen voltooid",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          textColor: Colors.black,
-          backgroundColor: Styles.APred.shade900,
-          webPosition: "center",
-          webBgColor: "#e0e0e0",
-          timeInSecForIosWeb: 3,
-        );
-        ;
-        Navigator.of(context).pop();
-      }
-      textFieldController.text = "";
-    });
-
-    @override
-    void dispose() {
-      // Clean up the controller when the widget is disposed.
-      textFieldController.dispose();
-      super.dispose();
-    }
-  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -88,10 +58,6 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
               return GestureDetector(
                 onTap: () {
                   if (questions[index].type == 'open') {
-                    if (questions[index].antwoord != null) {
-                      print(questions[index].antwoord);
-                    }
-                    ;
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -154,7 +120,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         await docAnswer.set(question.toJsonMultiple()).then((res) {});
       } else if (_question.type == 'open') {
         await docAnswer.set(question.toJsonOpen()).then((res) {});
-      } else if (_question.type == 'correction') {
+      } else if (_question.type == 'correctie') {
         await docAnswer.set(question.toJsonCorrection()).then((res) {});
       }
     }
