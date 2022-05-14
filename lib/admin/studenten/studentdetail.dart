@@ -198,25 +198,33 @@ Widget answersList(List<Answer> answers, String currentStudent) {
       studentAnswers.add(answer);
     }
   }
-  return Container(
-    child: Column(
-      children: [
-        ListView.builder(
-          padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
-          shrinkWrap: true,
-          controller: ScrollController(),
-          itemCount: studentAnswers.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              child: Card(
-                child: ListTile(
-                  title: Text(studentAnswers[index].studentId),
+  if (studentAnswers.isNotEmpty) {
+    return Container(
+      child: Column(
+        children: [
+          ListView.builder(
+            padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
+            shrinkWrap: true,
+            controller: ScrollController(),
+            itemCount: studentAnswers.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                child: Card(
+                  child: ListTile(
+                    title: Text(studentAnswers[index].studentId),
+                  ),
                 ),
-              ),
-            );
-          },
-        ),
-      ],
-    ),
-  );
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  } else {
+    return Container(
+        padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
+        child: Card(
+          child: ListTile(title: Text("Geen antwoorden gevonden.")),
+        ));
+  }
 }
