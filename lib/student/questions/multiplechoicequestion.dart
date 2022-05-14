@@ -23,56 +23,33 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
         body: multipleChoiceQuestion(),
       );
 
+  late List<bool> _isSelected = [];
+  late Set _saved = Set();
+
+  @override
   Widget multipleChoiceQuestion() {
-    final List checked = [];
-    bool isChecked = true;
-
-    void _onAnswerSelected(bool selected, antwoord) {
-      if (selected == true) {
-        setState(() {
-          checked.add(antwoord);
-        });
-      } else {
-        setState(() {
-          checked.remove(antwoord);
-        });
-      }
-    }
-
-    return Container(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            widget.question.vraag,
-            style: Styles.headerStyleH1,
-          ),
-          ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: widget.question.antwoorden.length,
-            itemBuilder: (context, index) {
-              return CheckboxListTile(
-                  title: Text(widget.question.antwoorden[index]),
-                  controlAffinity: ListTileControlAffinity.leading,
-                  selectedTileColor: Styles.APred.shade50,
-                  value: isChecked,
-                  onChanged: (value) {
-                    setState(() {
-                      isChecked = value!;
-                    });
-                  });
+    return Scaffold(
+      body: ListView.builder(
+        itemCount: widget.question.antwoorden.length,
+        itemBuilder: (context, index) {
+          _isSelected.add(false);
+          return CheckboxListTile(
+            title: Text(widget.question.antwoorden[index]),
+            checkColor: Colors.indigo,
+            value: _isSelected[index],
+            onChanged: (bool? newValue) {
+              setState(() {
+                if (_isSelected[index] == false) {
+                  _saved.add(widget.question.antwoorden[index]);
+                } else {
+                  _saved.remove(widget.question.antwoorden[index]);
+                }
+                print(_saved);
+                _isSelected[index] = newValue!;
+              });
             },
-          ),
-          ElevatedButton(
-            onPressed: () {
-              print(checked);
-            },
-            child: const Text('Beantwoorden'),
-          )
-        ],
+          );
+        },
       ),
     );
   }
