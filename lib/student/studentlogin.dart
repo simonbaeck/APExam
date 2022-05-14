@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/student/questions/questions.dart';
 import 'package:flutter_project/styles/styles.dart';
-import 'package:flutter_project/student/questions.dart';
+import 'package:flutter_project/student/questions/questions.dart';
 import '../admin/studenten/student.class.dart';
 
 class StudentLoginScreen extends StatefulWidget {
@@ -84,12 +85,12 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                               });
                             },
                             value: snapshot.data?.docs
-                                .where(
-                                    (e) => e.get('examActive') == false)
-                                .toList()
-                                .where((e) => e.id == studentId)
-                                .length ==
-                                1
+                                        .where(
+                                            (e) => e.get('examActive') == false)
+                                        .toList()
+                                        .where((e) => e.id == studentId)
+                                        .length ==
+                                    1
                                 ? studentId
                                 : null,
                           );
@@ -103,16 +104,16 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                           onPressed: _isButtonDisabled
                               ? null
                               : () {
-                            setState(() {
-                              _isButtonDisabled = true;
-                            });
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => QuestionsScreen(
-                                      currentStudentId: studentId)),
-                            );
-                          },
+                                  setState(() {
+                                    _isButtonDisabled = true;
+                                  });
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => QuestionsScreen(
+                                            currentStudentId: studentId)),
+                                  );
+                                },
                           style: ButtonStyle(
                             textStyle: MaterialStateProperty.all(
                               const TextStyle(

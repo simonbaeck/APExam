@@ -6,6 +6,7 @@ class Question {
   late String studentId;
   late String antwoord;
   late List<String> antwoorden = [];
+  late bool beantwoord = false;
 
   Question({
     required this.id,
@@ -30,14 +31,12 @@ class Question {
 
   static Question fromJson(Map<String, dynamic> json) {
     if (json['antwoorden'] != null) {
-      print(json['antwoorden']);
       return Question(
           id: json['id'],
           type: json['type'],
           vraag: json['vraag'],
           antwoorden: List.from(json['antwoorden']));
     } else {
-      print(json['antwoord']);
       return Question(
           id: json['id'],
           type: json['type'],
