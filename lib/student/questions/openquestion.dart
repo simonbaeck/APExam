@@ -1,19 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/question.class.dart';
-import 'package:flutter/material.dart';
-
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
+import 'answer.class.dart';
 
 class OpenQuestion extends StatefulWidget {
   final Question question;
-  const OpenQuestion({Key? key, required this.question}) : super(key: key);
+  final String studentId;
+  final Answer? antwoord;
+
+  const OpenQuestion({Key? key, required this.question, required this.studentId, this.antwoord}) : super(key: key);
 
   @override
   State<OpenQuestion> createState() => _OpenQuestionState();
 }
 
 class _OpenQuestionState extends State<OpenQuestion> {
+
+  final textFieldController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.antwoord != null) {
+      textFieldController.text = widget.antwoord!.antwoord;
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -23,8 +41,6 @@ class _OpenQuestionState extends State<OpenQuestion> {
       );
 
   Widget openquestion() {
-    final textFieldController =
-        TextEditingController(text: widget.question.antwoord);
     return Container(
       child: Column(
         children: [
@@ -47,10 +63,12 @@ class _OpenQuestionState extends State<OpenQuestion> {
           ),
           ElevatedButton(
             onPressed: () {
-              widget.question.addAnswer(textFieldController.text);
+              Answer toAdd = Answer();
+              toAdd.questionId = widget.question.id;
+              toAdd.antwoord = textFieldController.text;
+              toAdd.studentId = widget.studentId;
               Toaster().showToastMsg("Examen ingediend");
-
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(toAdd);
             },
             child: const Text('Beantwoorden'),
           )

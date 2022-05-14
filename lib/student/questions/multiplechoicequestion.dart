@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project/student/questions/question.class.dart';
-import 'package:flutter/material.dart';
-
 import '../../services/toaster.dart';
-import '../../styles/styles.dart';
+import 'answer.class.dart';
+import 'multiquestion.class.dart';
 
 class MultipleChoiceQuestion extends StatefulWidget {
-  final Question question;
+  final MultiChoiceQuestion question;
+  final String studentId;
+  final Answer? antwoord;
 
-  const MultipleChoiceQuestion({Key? key, required this.question})
-      : super(key: key);
+  const MultipleChoiceQuestion({Key? key, required this.studentId, required this.question, this.antwoord}) : super(key: key);
 
   @override
   State<MultipleChoiceQuestion> createState() => _MultipleChoiceQuestionState();
@@ -24,49 +23,63 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
         body: multipleChoiceQuestion(),
       );
 
-  late List<bool> _isSelected = [];
-  late Set<String> _saved = Set();
+  late String defaultChoice;
+  int defaultIndex = 0;
+
+  Answer toAdd = Answer();
+
+  @override
+  void initState() {
+    super.initState();
+    defaultChoice = widget.question.antwoorden[0];
+    if (widget.antwoord != null) {
+      defaultChoice = widget.antwoord!.antwoord;
+    }
+  }
 
   @override
   Widget multipleChoiceQuestion() {
     return Container(
-        child: Column(
-      children: [
-        ListView.builder(
-          physics: NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          itemCount: widget.question.antwoorden.length,
-          itemBuilder: (context, index) {
-            _isSelected.add(false);
-            return CheckboxListTile(
-              title: Text(widget.question.antwoorden[index]),
-              checkColor: Colors.indigo,
-              value: _isSelected[index],
-              onChanged: (bool? newValue) {
-                setState(() {
-                  if (_isSelected[index] == false) {
-                    _saved.add(widget.question.antwoorden[index]);
-                  } else {
-                    _saved.remove(widget.question.antwoorden[index]);
-                  }
-                  _isSelected[index] = newValue!;
-                });
-              },
-            );
-          },
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        ElevatedButton(
-          onPressed: () {
-            widget.question.addAnswers(_saved.toList());
-            Toaster().showToastMsg("Vraag beantwoord");
-            Navigator.of(context).pop();
-          },
-          child: const Text('Beantwoorden'),
-        )
-      ],
-    ));
+      child: Column(
+        children: [
+          Column(
+            children: [
+              Wrap(
+                children: [
+                  Container(
+                    child: Column(
+                      children: widget.question.antwoorden.map((e) => RadioListTile(
+                          title: Text(e),
+                          value: e.toString(),
+                          groupValue: defaultChoice,
+                          onChanged: (value) {
+                            setState(() {
+                              defaultChoice = e;
+                            });
+                          }
+                      )).toList(),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Answer toAdd = Answer();
+              toAdd.questionId = widget.question.id;
+              toAdd.antwoord = defaultChoice;
+              toAdd.studentId = widget.studentId;
+              Toaster().showToastMsg("Vraag beantwoord");
+              Navigator.of(context).pop(toAdd);
+            },
+            child: const Text('Beantwoorden'),
+          )
+        ],
+      )
+    );
   }
 }

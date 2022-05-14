@@ -1,122 +1,272 @@
+import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/admin/examens/multiplechoice/multiplechoise.class.dart';
 import 'package:flutter_project/student/questions/correctionquestion.dart';
 import 'package:flutter_project/student/questions/multiplechoicequestion.dart';
+import 'package:flutter_project/student/questions/multiquestion.class.dart';
 import 'package:flutter_project/student/questions/openquestion.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_project/student/questions/question.class.dart';
 import 'package:geolocator/geolocator.dart';
+import '../../services/loader.dart';
 import '../../services/toaster.dart';
-import '/styles/styles.dart';
+import 'answer.class.dart';
 
 class QuestionsScreen extends StatefulWidget {
   final String? currentStudentId;
-  const QuestionsScreen({Key? key, required this.currentStudentId})
-      : super(key: key);
+  const QuestionsScreen({Key? key, required this.currentStudentId}) : super(key: key);
 
   @override
   State<QuestionsScreen> createState() => _QuestionsScreenState();
 }
 
 class _QuestionsScreenState extends State<QuestionsScreen> {
-  Stream<List<Question>> readQuestions() => FirebaseFirestore.instance
-      .collection('vragen')
-      .snapshots()
-      .map((snapshot) =>
-          snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList());
-
-  late List<Question> questions = [];
   final textFieldController = TextEditingController();
 
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('Questions'),
-        ),
-        body: StreamBuilder<List<Question>>(
-            stream: readQuestions(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                questions = snapshot.data!;
-                return questionsList(questions);
-              } else {
-                return const Center(child: CircularProgressIndicator());
-              }
-            }),
-      );
+  List<Answer> antwoorden = [];
 
-  Widget questionsList(List<Question> questions) {
-    return Container(
-      child: Column(
-        children: [
-          ListView.builder(
-            padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
-            shrinkWrap: true,
-            controller: ScrollController(),
-            itemCount: questions.length,
-            itemBuilder: (context, index) {
-              return GestureDetector(
-                onTap: () {
-                  if (questions[index].type == 'open') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => OpenQuestion(
-                                question: questions[index],
-                              )),
-                    );
-                  } else if (questions[index].type == 'correctie') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CorrectionQuestion(
-                                question: questions[index],
-                              )),
-                    );
-                  } else if (questions[index].type == "multiplechoice") {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MultipleChoiceQuestion(
-                                question: questions[index],
-                              )),
-                    );
+  static const maxSeconds = 60;
+  int seconds = maxSeconds;
+  Timer? timer;
+
+  @override
+  void initState() {
+    if (mounted) {
+      super.initState();
+      updateStudent(studentId: widget.currentStudentId);
+      startTimer();
+    }
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    setState(() {
+      timer?.cancel();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            const Text('Questions'),
+            buildTimer(),
+          ],
+        ),
+        automaticallyImplyLeading: false,
+      ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Column(
+            children: [
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance.collection('vragen').snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text("Error");
+                  } else if (!snapshot.hasData) {
+                    return const LoaderWidget(loaderText: "Laden...");
+                  } else {
+                    if (snapshot.data!.docs.isNotEmpty) {
+                      return Expanded(
+                        child: ListView.builder(
+                          shrinkWrap: true,
+                          controller: ScrollController(),
+                          itemCount: snapshot.data!.docs.length,
+                          itemBuilder: (context, index) {
+                            DocumentSnapshot ds = snapshot.data!.docs[index];
+                            return GestureDetector(
+                              onTap: () {
+                                if (ds["type"] == "open") {
+                                  Question question = Question();
+                                  question.id = ds["id"];
+                                  question.vraag = ds["vraag"];
+                                  question.type = ds["type"];
+
+                                  if (antwoorden.where((e) => e.questionId == ds["id"]).toList().isEmpty == true) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => OpenQuestion(
+                                            question: question,
+                                            studentId: widget.currentStudentId!,
+                                          )),
+                                    ).then((value) => antwoorden.add(value));
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => OpenQuestion(
+                                            question: question,
+                                            studentId: widget.currentStudentId!,
+                                            antwoord: antwoorden.singleWhere((e) => e.questionId == ds["id"])),
+                                          ),
+                                    ).then((value) {
+                                      if (value != null) {
+                                        var index = antwoorden.indexOf(antwoorden.where((e) => e.questionId == ds["id"]).first);
+                                        antwoorden[index] = value;
+                                      }
+                                    });
+                                  }
+                                } else if (ds["type"] == "correctie") {
+                                  Question question = Question();
+                                  question.id = ds["id"];
+                                  question.vraag = ds["vraag"];
+                                  question.type = ds["type"];
+
+                                  if (antwoorden.where((e) => e.questionId == ds["id"]).toList().isEmpty == true) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => CorrectionQuestion(
+                                            question: question,
+                                            studentId: widget.currentStudentId!,
+                                          )),
+                                    ).then((value) => antwoorden.add(value));
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => CorrectionQuestion(
+                                            question: question,
+                                            studentId: widget.currentStudentId!,
+                                            antwoord: antwoorden.singleWhere((e) => e.questionId == ds["id"])),
+                                      ),
+                                    ).then((value) {
+                                      if (value != null) {
+                                        var index = antwoorden.indexOf(antwoorden.where((e) => e.questionId == ds["id"]).first);
+                                        antwoorden[index] = value;
+                                      }
+                                    });
+                                  }
+                                } else {
+                                  MultiChoiceQuestion mquestion = MultiChoiceQuestion();
+                                  mquestion.id = ds["id"];
+                                  mquestion.vraag = ds["vraag"];
+                                  mquestion.type = ds["type"];
+                                  mquestion.antwoorden = List<String>.from(ds["antwoorden"]);
+
+                                  if (antwoorden.where((e) => e.questionId == ds["id"]).toList().isEmpty == true) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MultipleChoiceQuestion(
+                                            question: mquestion,
+                                            studentId: widget.currentStudentId!,
+                                          )),
+                                    ).then((value) => antwoorden.add(value));
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MultipleChoiceQuestion(
+                                            question: mquestion,
+                                            studentId: widget.currentStudentId!,
+                                            antwoord: antwoorden.singleWhere((e) => e.questionId == ds["id"])),
+                                      ),
+                                    ).then((value) {
+                                      if (value != null) {
+                                        var index = antwoorden.indexOf(antwoorden.where((e) => e.questionId == ds["id"]).first);
+                                        antwoorden[index] = value;
+                                      }
+                                    });
+                                  }
+                                }
+                              },
+                              child: Card(
+                                child: ListTile(
+                                  title: Text("${ds["vraag"]}"),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    } else {
+                      return const SizedBox(height: 0.0);
+                    }
                   }
                 },
-                child: Card(
-                  child: ListTile(
-                    title: Text(questions[index].vraag),
-                  ),
-                ),
-              );
-            },
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Container(
+                alignment: Alignment.topLeft,
+                child: ElevatedButton(
+                    onPressed: () {
+                      print(antwoorden);
+                    },
+                    style: ButtonStyle(
+                      textStyle: MaterialStateProperty.all(
+                        const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 65)),
+                    ),
+                    child: Text("check answers".toUpperCase())),
+              ),
+              Container(
+                alignment: Alignment.topLeft,
+                child: ElevatedButton(
+                    onPressed: () {
+                      addAnswersToDatabase();
+                    },
+                    style: ButtonStyle(
+                      textStyle: MaterialStateProperty.all(
+                        const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 65)),
+                    ),
+                    child: Text("examen indienen".toUpperCase())),
+              ),
+            ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              addAnswersToDatabase(questions: questions);
-            },
-            child: const Text('Examen indienen'),
-          )
-        ],
+        ),
       ),
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    updateStudent(studentId: widget.currentStudentId);
+  Widget buildTimer() {
+    if (mounted) {
+      return Text('Resterende tijd: $seconds');
+    } else {
+      return const SizedBox(height: 0.0);
+    }
+  }
+
+  void startTimer() {
+    timer = Timer.periodic(Duration(seconds: 1), (_) {
+      if (seconds > 0) {
+        if (mounted) {
+          setState(() => seconds--);
+        }
+      } else {
+        addAnswersToDatabase();
+      }
+    });
   }
 
   Future updateStudent({required String? studentId}) async {
     final docStudent =
     FirebaseFirestore.instance.collection("studenten").doc(studentId);
     // Update examen afgelegd
-    docStudent.update({"examActive": true}).catchError((e) => print(e));
+    docStudent.update({"examActive": false}).catchError((e) => print(e));
     // Update locatie
     getCurrentLocation().then((Position position) => {
       docStudent.update({
@@ -125,31 +275,45 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     });
   }
 
-  Future<Position> getCurrentLocation() {
-    return Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best);
+  Future<bool> getExtraTime() async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference = collectionReference.doc(widget.currentStudentId);
+    Future<DocumentSnapshot> docSnapshot = documentReference.get();
+
+    return await docSnapshot.then((data) {
+      if (data['extraTime'] == false) {
+        return false;
+      } else {
+        return true;
+      }
+    });
   }
 
-  Future addAnswersToDatabase({required List<Question> questions}) async {
-    for (var question in questions) {
-      final docAnswer =
-          FirebaseFirestore.instance.collection('antwoorden').doc();
+  Future<Position> getCurrentLocation() {
+    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+  }
 
-      final Question _question = question;
+  Future addAnswersToDatabase() async {
+    try {
+      for (var antwoord in antwoorden) {
+        final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
+        final Answer _answer = Answer();
 
-      _question.studentId = widget.currentStudentId!;
-      _question.antwoord = _question.antwoord;
+        _answer.id = docAnswer.id;
+        _answer.questionId = antwoord.questionId;
+        _answer.studentId = antwoord.studentId;
+        _answer.antwoord = antwoord.antwoord;
 
-      ///Add to database
-      if (_question.type == 'multiplechoice') {
-        await docAnswer.set(question.toJsonMultiple()).then((res) {});
-      } else if (_question.type == 'open') {
-        await docAnswer.set(question.toJsonOpen()).then((res) {});
-      } else if (_question.type == 'correctie') {
-        await docAnswer.set(question.toJsonCorrection()).then((res) {});
+        await docAnswer.set(_answer.toMap());
       }
+
+      Toaster().showToastMsg("Examen ingediend");
+      setState(() {
+        timer?.cancel();
+      });
+      Navigator.of(context).pop();
+    } on FirebaseException catch (ex) {
+      Toaster().showToastMsg(ex);
     }
-    Toaster().showToastMsg("Examen ingediend");
-    Navigator.of(context).pop();
   }
 }

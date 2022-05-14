@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/question.class.dart';
-import 'package:flutter/material.dart';
-
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
+import 'answer.class.dart';
 
 class CorrectionQuestion extends StatefulWidget {
   final Question question;
+  final String studentId;
+  final Answer? antwoord;
 
-  const CorrectionQuestion({Key? key, required this.question})
-      : super(key: key);
+  const CorrectionQuestion({Key? key, required this.question, required this.studentId, this.antwoord}) : super(key: key);
 
   @override
   State<CorrectionQuestion> createState() => _CorrectionQuestionState();
 }
 
 class _CorrectionQuestionState extends State<CorrectionQuestion> {
+
+  final textFieldController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.antwoord != null) {
+      textFieldController.text = widget.antwoord!.antwoord;
+    }
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -25,8 +36,6 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
       );
 
   Widget correctionQuestion() {
-    final textFieldController =
-        TextEditingController(text: widget.question.antwoord);
     return Container(
       child: Column(
         children: [
@@ -56,11 +65,14 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
           ),
           ElevatedButton(
             onPressed: () {
-              widget.question.addAnswer(textFieldController.text);
+              Answer toAdd = Answer();
+              toAdd.questionId = widget.question.id;
+              toAdd.antwoord = textFieldController.text;
+              toAdd.studentId = widget.studentId;
               Toaster().showToastMsg("Vraag beantwoord");
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(toAdd);
             },
-            child: const Text('Beantwoorden'),
+            child: const Text('Bevestig'),
           )
         ],
       ),

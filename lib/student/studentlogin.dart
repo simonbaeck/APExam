@@ -19,7 +19,6 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
   @override
   void initState() {
     super.initState();
-    getExtraTime();
   }
 
   @override
@@ -70,7 +69,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
                           _isButtonDisabled = true;
                           return const CircularProgressIndicator();
                         } else {
-                          if (snapshot.data?.docs.where((e) => e.get('examActive') == false).toList().isEmpty == true) {
+                          if (snapshot.hasData && snapshot.data?.docs.where((e) => e.get('examActive') == false).toList().isEmpty == true) {
                             return Container(
                               width: double.infinity,
                               child: Column(
@@ -152,23 +151,5 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
         ),
       ),
     );
-  }
-
-  Widget buildTimer() {
-    return Text("Hier");
-  }
-
-  Future<bool> getExtraTime() async {
-    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
-    DocumentReference documentReference = collectionReference.doc("0DfDwQsTHcCQNarYbT8O");
-    Future<DocumentSnapshot> docSnapshot = documentReference.get();
-
-    return await docSnapshot.then((data) {
-      if (data['extraTime'] == false) {
-        return false;
-      } else {
-        return true;
-      }
-    });
   }
 }
