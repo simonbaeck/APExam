@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_project/admin/studenten/points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -199,6 +200,7 @@ Widget answersList(List<Answer> answers, String currentStudent) {
     }
   }
   if (studentAnswers.isNotEmpty) {
+    checkCorrection("Debug.Log('Hello World') ", "Debug.Log('Hello World') ");
     return Container(
       child: Column(
         children: [
