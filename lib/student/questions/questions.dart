@@ -76,67 +76,87 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       );
 
   Widget questionsList(List<Question> questions) {
-    return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
-      shrinkWrap: true,
-      controller: ScrollController(),
-      itemCount: questions.length,
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            print("tap");
-            if (questions[index].type == 'open') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => OpenQuestion(
-                          question: questions[index],
-                        )),
+    return Container(
+      child: Column(
+        children: [
+          ListView.builder(
+            padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
+            shrinkWrap: true,
+            controller: ScrollController(),
+            itemCount: questions.length,
+            itemBuilder: (context, index) {
+              return GestureDetector(
+                onTap: () {
+                  if (questions[index].type == 'open') {
+                    if (questions[index].antwoord != null) {
+                      print(questions[index].antwoord);
+                    }
+                    ;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OpenQuestion(
+                                question: questions[index],
+                              )),
+                    );
+                  } else if (questions[index].type == 'correctie') {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CorrectionQuestion(
+                                question: questions[index],
+                              )),
+                    );
+                  } else if (questions[index].type == "multiplechoice") {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => MultipleChoiceQuestion(
+                                question: questions[index],
+                              )),
+                    );
+                  }
+                },
+                child: Card(
+                  child: ListTile(
+                    title: Text(questions[index].vraag),
+                  ),
+                ),
               );
-            } else if (questions[index].type == 'correctie') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => CorrectionQuestion(
-                          question: questions[index],
-                        )),
-              );
-            } else if (questions[index].type == "multiplechoice") {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MultipleChoiceQuestion(
-                          question: questions[index],
-                        )),
-              );
-            }
-          },
-          child: Card(
-            child: ListTile(
-              title: Text(questions[index].vraag),
-            ),
+            },
           ),
-        );
-      },
+          const SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              addAnswersToDatabase(questions: questions);
+            },
+            child: const Text('Examen indienen'),
+          )
+        ],
+      ),
     );
   }
 
-  Future addAnswer({required Question question, required bool open}) async {
-    final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
-    final Question _question = question;
+  Future addAnswersToDatabase({required List<Question> questions}) async {
+    for (var question in questions) {
+      final docAnswer =
+          FirebaseFirestore.instance.collection('antwoorden').doc();
 
-    _question.studentId = widget.currentStudentId!;
-    _question.antwoord = textFieldController.text;
+      final Question _question = question;
 
-    ///Add to database
-    if (open) {
-      await docAnswer.set(question.toJsonOpen()).then((res) {
-        Toaster().showToastMsg("vraag beantwoord");
-      });
-    } else {
-      await docAnswer.set(question.toJsonMultiple()).then((res) {
-        Toaster().showToastMsg("vraag beantwoord");
-      });
+      _question.studentId = widget.currentStudentId!;
+      _question.antwoord = _question.antwoord;
+
+      ///Add to database
+      if (_question.type == 'multiplechoice') {
+        await docAnswer.set(question.toJsonMultiple()).then((res) {});
+      } else {
+        await docAnswer.set(question.toJsonOpen()).then((res) {});
+      }
     }
+    Toaster().showToastMsg("Examen ingediend");
+    Navigator.of(context).pop();
   }
 }

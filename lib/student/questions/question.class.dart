@@ -4,9 +4,8 @@ class Question {
   late String type;
   late String vraag;
   late String studentId;
-  late String antwoord;
+  late String antwoord = "";
   late List<String> antwoorden = [];
-  late bool beantwoord = false;
 
   Question({
     required this.id,
@@ -43,5 +42,9 @@ class Question {
           vraag: json['vraag'],
           antwoorden: [""]);
     }
+  }
+
+  addAnswer(String answer) {
+    antwoord = answer;
   }
 }

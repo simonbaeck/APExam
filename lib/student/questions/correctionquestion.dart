@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/question.class.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 
 class CorrectionQuestion extends StatefulWidget {
@@ -15,8 +16,6 @@ class CorrectionQuestion extends StatefulWidget {
 }
 
 class _CorrectionQuestionState extends State<CorrectionQuestion> {
-  final textFieldController = TextEditingController();
-
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -26,6 +25,8 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
       );
 
   Widget correctionQuestion() {
+    final textFieldController =
+        TextEditingController(text: widget.question.antwoord);
     return Container(
       child: Column(
         children: [
@@ -43,7 +44,7 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
           const SizedBox(
             height: 20,
           ),
-          TextField(
+          TextFormField(
             controller: textFieldController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -54,7 +55,11 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
             height: 20,
           ),
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              widget.question.addAnswer(textFieldController.text);
+              Toaster().showToastMsg("Vraag beantwoord");
+              Navigator.of(context).pop();
+            },
             child: const Text('Beantwoorden'),
           )
         ],

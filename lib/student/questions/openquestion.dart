@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/question.class.dart';
 import 'package:flutter/material.dart';
 
+import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 
 class OpenQuestion extends StatefulWidget {
@@ -13,8 +14,6 @@ class OpenQuestion extends StatefulWidget {
 }
 
 class _OpenQuestionState extends State<OpenQuestion> {
-  final textFieldController = TextEditingController();
-
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
@@ -24,6 +23,8 @@ class _OpenQuestionState extends State<OpenQuestion> {
       );
 
   Widget openquestion() {
+    final textFieldController =
+        TextEditingController(text: widget.question.antwoord);
     return Container(
       child: Column(
         children: [
@@ -34,7 +35,7 @@ class _OpenQuestionState extends State<OpenQuestion> {
           const SizedBox(
             height: 20,
           ),
-          TextField(
+          TextFormField(
             controller: textFieldController,
             decoration: InputDecoration(
               border: OutlineInputBorder(),
@@ -46,7 +47,10 @@ class _OpenQuestionState extends State<OpenQuestion> {
           ),
           ElevatedButton(
             onPressed: () {
-              widget.question.beantwoord = true;
+              widget.question.addAnswer(textFieldController.text);
+              Toaster().showToastMsg("Examen ingediend");
+
+              Navigator.of(context).pop();
             },
             child: const Text('Beantwoorden'),
           )
