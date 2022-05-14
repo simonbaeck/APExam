@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/questions.dart';
 import 'package:flutter_project/styles/styles.dart';
-import 'package:flutter_project/student/questions.dart';
 import 'package:simple_timer/simple_timer.dart';
 import '../admin/studenten/student.class.dart';
 
@@ -156,7 +155,7 @@ class _StudentLoginScreenState extends State<StudentLoginScreen> {
   }
 
   Widget buildTimer() {
-    return
+    return Text("Hier");
   }
 
   Future<bool> getExtraTime() async {

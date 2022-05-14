@@ -6,6 +6,7 @@ import 'package:flutter_project/student/questions/multiplechoicequestion.dart';
 import 'package:flutter_project/student/questions/openquestion.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_project/student/questions/question.class.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../services/toaster.dart';
 import '/styles/styles.dart';
 
@@ -103,6 +104,30 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateStudent(studentId: widget.currentStudentId);
+  }
+
+  Future updateStudent({required String? studentId}) async {
+    final docStudent =
+    FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    // Update examen afgelegd
+    docStudent.update({"examActive": true}).catchError((e) => print(e));
+    // Update locatie
+    getCurrentLocation().then((Position position) => {
+      docStudent.update({
+        "studentLocation": GeoPoint(position.latitude, position.longitude)
+      }).catchError((e) => print(e))
+    });
+  }
+
+  Future<Position> getCurrentLocation() {
+    return Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
   }
 
   Future addAnswersToDatabase({required List<Question> questions}) async {
