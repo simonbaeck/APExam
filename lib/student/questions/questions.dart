@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:html';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   static const maxSeconds = 60;
   int seconds = maxSeconds;
   Timer? timer;
+  int aantalVragen = 0;
 
   @override
   void initState() {
@@ -35,6 +37,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
       super.initState();
       updateStudent(studentId: widget.currentStudentId);
       startTimer();
+
+      FirebaseFirestore.instance.collection("vragen").get().then((querySnapshot) {
+        aantalVragen = querySnapshot.size;
+      });
     }
   }
 
@@ -305,6 +311,17 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
         _answer.antwoord = antwoord.antwoord;
 
         await docAnswer.set(_answer.toMap());
+      }
+
+      var aantalVragenBeantwoord = antwoorden.where((e) => e.studentId == widget.currentStudentId).length;
+      for (var i = 0; i < aantalVragen - aantalVragenBeantwoord; i++) {
+        final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
+        final Answer emptyAnswer = Answer();
+        emptyAnswer.id = docAnswer.id;
+        emptyAnswer.studentId = widget.currentStudentId!;
+        emptyAnswer.questionId = "";
+        emptyAnswer.antwoord = "";
+        await docAnswer.set(emptyAnswer.toMap());
       }
 
       Toaster().showToastMsg("Examen ingediend");
