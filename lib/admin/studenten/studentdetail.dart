@@ -192,6 +192,12 @@ class _StudentDetailState extends State<StudentDetail> {
 }
 
 Widget answersList(List<Answer> answers, String currentStudent) {
+  List<Answer> studentAnswers = [];
+  for (var answer in answers) {
+    if (currentStudent == answer.studentId) {
+      studentAnswers.add(answer);
+    }
+  }
   return Container(
     child: Column(
       children: [
@@ -199,25 +205,15 @@ Widget answersList(List<Answer> answers, String currentStudent) {
           padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
           shrinkWrap: true,
           controller: ScrollController(),
-          itemCount: answers.length,
+          itemCount: studentAnswers.length,
           itemBuilder: (context, index) {
-            if (currentStudent == answers[index].studentId) {
-              return GestureDetector(
-                child: Card(
-                  child: ListTile(
-                    title: Text(answers[index].studentId),
-                  ),
+            return GestureDetector(
+              child: Card(
+                child: ListTile(
+                  title: Text(studentAnswers[index].studentId),
                 ),
-              );
-            } else {
-              return GestureDetector(
-                child: Card(
-                  child: ListTile(
-                    title: Text(""),
-                  ),
-                ),
-              );
-            }
+              ),
+            );
           },
         ),
       ],

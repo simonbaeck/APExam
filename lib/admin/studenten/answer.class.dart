@@ -7,6 +7,7 @@ class Answer {
   late String studentId;
   late String antwoord = "";
   late List<String> antwoorden = [];
+  late int punt;
 
   Answer({
     required this.type,
