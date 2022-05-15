@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_project/admin/examens/openvraag/openvraag.class.dart';
-import 'package:flutter_project/admin/studenten/student.class.dart';
 import 'package:flutter_project/admin/examens/multiplechoice/multiplechoise.class.dart';
 import '../../../services/toaster.dart';
 import '../../../styles/styles.dart';
+import 'choice.class.dart';
 
 class AddMultplechoice extends StatefulWidget {
   const AddMultplechoice({Key? key}) : super(key: key);
@@ -22,7 +21,10 @@ class _AddMultplechoice extends State<AddMultplechoice> {
 
   bool isButtonStep1Disabled = true;
   bool hasContinued = false;
-  Map<String, bool> checklist = {};
+
+  List<Choice> vragen = [];
+  late String defaultChoice;
+  int defaultIndex = 0;
 
   @override
   void dispose() {
@@ -35,7 +37,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
       antwoordController.text;
       if (antwoordController.text.isEmpty && hasContinued) {
         hasContinued = false;
-        checklist = {};
+        vragen = [];
       }
 
       antwoordController.text.split(";").length > 1 ? isButtonStep1Disabled = false : isButtonStep1Disabled = true;
@@ -106,7 +108,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                   !hasContinued ? Container(
                     alignment: Alignment.topLeft,
                     child: ElevatedButton(
-                        onPressed: isButtonStep1Disabled ? null : () => createMap(answers: antwoordController.text),
+                        onPressed: isButtonStep1Disabled ? null : () => createList(answers: antwoordController.text),
                         style: ButtonStyle(
                           textStyle: MaterialStateProperty.all(
                             const TextStyle(
@@ -125,28 +127,32 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          "Selecteer hieronder de juiste antwoorden op de multiple choice vraag",
+                          "Selecteer hieronder de juiste antwoord op de multiple choice vraag",
                           style: Styles.textColorBlack,
                         ),
                         const SizedBox(height: 10.0),
-                        ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: checklist.length,
-                            itemBuilder: (context, index) {
-                              return CheckboxListTile(
-                                title: Text(checklist.keys.elementAt(index)),
-                                value: checklist.values.elementAt(index),
-                                controlAffinity: ListTileControlAffinity.leading,
-                                selectedTileColor: Styles.APred.shade50,
-                                selected: checklist.values.elementAt(index),
-                                onChanged: (bool? val) {
-                                  setState(() {
-                                    checklist.update(checklist.keys.elementAt(index), (value) => val!);
-                                  });
-                                },
-                              );
-                            }
+                        Column(
+                          children: [
+                            Wrap(
+                              children: [
+                                Container(
+                                  child: Column(
+                                    children: vragen.map((e) => RadioListTile(
+                                        title: Text(e.vraag),
+                                        value: e.index,
+                                        groupValue: defaultIndex,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            defaultChoice = e.vraag;
+                                            defaultIndex = e.index;
+                                          });
+                                        }
+                                    )).toList(),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20.0),
                         ElevatedButton(
@@ -182,24 +188,11 @@ class _AddMultplechoice extends State<AddMultplechoice> {
   Future addmuliplechoice({required String inpOpgave}) async {
     final docVraag = FirebaseFirestore.instance.collection("vragen").doc();
     final Multipechoice multipechoice = Multipechoice();
-
     multipechoice.id = docVraag.id;
     multipechoice.opgave = inpOpgave;
     multipechoice.type = "multiplechoice";
-
-    List<String> antwoorden = [];
-    for (var i = 0; i < checklist.length; i++) {
-      antwoorden.add(checklist.keys.elementAt(i));
-    }
-    multipechoice.antwoorden = antwoorden;
-
-    List<int> oplossingen = [];
-    for (var i = 0; i < checklist.length; i++) {
-      if (checklist.values.elementAt(i) == true) {
-        oplossingen.add(i);
-      }
-    }
-    multipechoice.oplossingen = oplossingen;
+    multipechoice.antwoorden = vragen.map((e) => e.vraag).toList();
+    multipechoice.oplossing = defaultChoice;
 
     await docVraag.set(multipechoice.toMap()).then((res) {
       Toaster().showToastMsg("vraag toegevoegd");
@@ -207,12 +200,16 @@ class _AddMultplechoice extends State<AddMultplechoice> {
     });
   }
 
-  createMap({ required String answers }) {
+  createList({ required String answers }) {
+    var counter = 0;
     answers.split(";").forEach((element) {
-      checklist[element] = false;
+      Choice toAdd = Choice(index: counter, vraag: element);
+      vragen.add(toAdd);
+      counter++;
     });
 
     setState(() {
+      defaultChoice = vragen[0].toString();
       hasContinued = true;
     });
   }

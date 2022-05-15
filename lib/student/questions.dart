@@ -1,15 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-
-import 'package:flutter_project/admin/examens/codecorrectie/correctievraag.class.dart';
 import 'package:flutter_project/admin/studenten/addmultiplestudent.dart';
 import 'package:flutter_project/admin/studenten/addstudent.dart';
 import 'package:flutter_project/admin/studenten/student.class.dart';
-import 'package:flutter_project/student/question.class.dart';
+import 'package:flutter_project/admin/studenten/studentdetail.dart';
+import 'package:flutter_project/services/loadingscreen.dart';
+import 'package:flutter_project/student/questiondetail.dart';
+import 'package:flutter_project/student/studentlogin.dart';
+import 'package:flutter_project/styles/styles.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:geolocator/geolocator.dart';
+
 import '../../services/toaster.dart';
-import '../styles/styles.dart';
 
 class QuestionsScreen extends StatefulWidget {
   final String? currentStudentId;
@@ -20,47 +22,36 @@ class QuestionsScreen extends StatefulWidget {
   State<QuestionsScreen> createState() => _QuestionsScreenState();
 }
 
-class _QuestionsScreenState extends State<QuestionsScreen> {
+class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print("didChangeAppLifecycleState is called");
+  }
+
   Stream<List<Question>> readQuestions() => FirebaseFirestore.instance
       .collection('vragen')
       .snapshots()
       .map((snapshot) =>
       snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList());
 
-  var _questionIndex = 0;
-  late List<Question> questions = [];
-  final textFieldController = TextEditingController();
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) return;
 
-  void _answerQuestion() {
-    setState(() {
-      if (_questionIndex != (questions.length - 1)) {
-        _questionIndex = _questionIndex + 1;
-      } else {
-        Fluttertoast.showToast(
-          msg: "Examen voltooid",
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          textColor: Colors.black,
-          backgroundColor: Styles.APred.shade900,
-          webPosition: "center",
-          webBgColor: "#e0e0e0",
-          timeInSecForIosWeb: 3,
-        );
-        ;
-        Navigator.of(context).pop();
-      }
-      textFieldController.text = "";
-    });
+    final isBackground = state == AppLifecycleState.paused;
 
-    @override
-    void dispose() {
-      // Clean up the controller when the widget is disposed.
-      textFieldController.dispose();
-      super.dispose();
+    if (isBackground) {
+      print("Is closed");
     }
   }
 
   @override
+  void dispose() {
+    print("dispose is called");
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Text('Questions'),
@@ -116,100 +107,129 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     );
   }
 
-  Widget correctionQuestion(List<Question> questions, int index) {
-    return Container(
-      child: Column(
-        children: [
-          Text(
-            'Corrigeer volgende code:',
-            style: Styles.headerStyleH1,
+  Position? _currentPosition;
+
+  /*@override
+  Widget build(BuildContext context) {
+    print("build is called");
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Vragen " + widget.currentStudentId.toString()),
+      ),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: ListView(
+            children: [
+              StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('vragen')
+                    .orderBy('id', descending: false)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return const Text("Error");
+                  } else if (!snapshot.hasData) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else {
+                    return snapshot.data!.docs.isNotEmpty
+                        ? Expanded(
+                            child: ListView.builder(
+                              padding: const EdgeInsets.fromLTRB(
+                                  30.0, 45.0, 30.0, 30.0),
+                              shrinkWrap: true,
+                              controller: ScrollController(),
+                              itemCount: snapshot.data!.docs.length,
+                              itemBuilder: (context, index) {
+                                DocumentSnapshot ds =
+                                    snapshot.data!.docs[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => QuestionDetail(
+                                                question: ds,
+                                                currentStudentId: widget
+                                                    .currentStudentId
+                                                    .toString(),
+                                              )),
+                                    );
+                                  },
+                                  child: Card(
+                                    child: ListTile(
+                                      title: Text("${ds["vraag"]}"),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                        : Container(
+                            padding: const EdgeInsets.fromLTRB(
+                                26.0, 30.0, 26.0, 30.0),
+                            child: const Card(
+                              child: ListTile(
+                                title: Text("Er zijn geen vragen gevonden"),
+                              ),
+                            ),
+                          );
+                  }
+                },
+              ),
+              Container(
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => StudentLoginScreen()),
+                      );
+                    },
+                    style: ButtonStyle(
+                      textStyle: MaterialStateProperty.all(
+                        const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      minimumSize: MaterialStateProperty.all(
+                          const Size(double.infinity, 65)),
+                    ),
+                    child: Text("Examen afronden".toUpperCase())),
+              ),
+            ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            questions[index].vraag,
-            style: Styles.textColorBlack,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextField(
-            controller: textFieldController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Correctie',
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              addAnswer(question: questions[index], open: true);
-              _answerQuestion();
-            },
-            child: const Text('Beantwoorden'),
-          )
-        ],
+        ),
       ),
     );
+  }*/
+
+  @override
+  void initState() {
+    super.initState();
+    print("initState is called");
+    WidgetsBinding.instance?.addObserver(this);
+    updateStudent(studentId: widget.currentStudentId);
   }
 
-  Widget multipleChoiceQuestion(List<Question> questions, int Index) {
-    final List checked = [];
-    bool isChecked = true;
-
-    void _onAnswerSelected(bool selected, antwoord) {
-      if (selected == true) {
-        setState(() {
-          checked.add(antwoord);
+  Future updateStudent({required String? studentId}) async {
+    final docStudent =
+        FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    // Update examen afgelegd
+    docStudent.update({"examActive": true}).catchError((e) => print(e));
+    // Update locatie
+    getCurrentLocation().then((Position position) => {
+          docStudent.update({
+            "studentLocation": GeoPoint(position.latitude, position.longitude)
+          }).catchError((e) => print(e))
         });
-      } else {
-        setState(() {
-          checked.remove(antwoord);
-        });
-      }
-    }
-
-    return Container(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            questions[Index].vraag,
-            style: Styles.headerStyleH1,
-          ),
-          ListView.builder(
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-            itemCount: questions[Index].antwoorden.length,
-            itemBuilder: (context, index) {
-              return CheckboxListTile(
-                  title: Text(questions[Index].antwoorden[index]),
-                  controlAffinity: ListTileControlAffinity.leading,
-                  selectedTileColor: Styles.APred.shade50,
-                  value: isChecked,
-                  onChanged: (value) {
-                    setState(() {
-                      isChecked = value!;
-                    });
-                  });
-            },
-          ),
-          ElevatedButton(
-            onPressed: () {
-              print(checked);
-              _answerQuestion();
-            },
-            child: const Text('Beantwoorden'),
-          )
-        ],
-      ),
-    );
   }
+
+  Future<Position> getCurrentLocation() {
+    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
 
   @override
   void initState() {
