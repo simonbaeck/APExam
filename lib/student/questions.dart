@@ -10,7 +10,7 @@ import 'package:flutter_project/student/studentlogin.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'dart:html' as html;
 import '../../services/toaster.dart';
 
 class QuestionsScreen extends StatefulWidget {
@@ -29,13 +29,10 @@ class _QuestionsScreenState extends State<QuestionsScreen>
     super.didChangeAppLifecycleState(state);
     print("didChangeAppLifecycleState is called");
 
-    if (state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.detached) return;
-
-    final isBackground = state == AppLifecycleState.paused;
-
-    if (isBackground) {
-      print("Is closed");
+    if (state == AppLifecycleState.inactive) {
+      print('app inactive MINIMIZED!');
+    } else if (state == AppLifecycleState.resumed) {
+      print('app resumed');
     }
   }
 
@@ -149,7 +146,10 @@ class _QuestionsScreenState extends State<QuestionsScreen>
   @override
   void initState() {
     super.initState();
-    print("initState is called");
+    html.window.onBeforeUnload.listen((event) async {
+      print("onBeforeUnload is called");
+    });
+
     WidgetsBinding.instance?.addObserver(this);
     updateStudent(studentId: widget.currentStudentId);
   }
