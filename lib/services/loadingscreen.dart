@@ -16,7 +16,7 @@ class LoadingScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Image.asset(
-            '../assets/splash.png',
+            'assets/splash.png',
             height: 150.0,
           ),
           const SizedBox(height: 20.0),

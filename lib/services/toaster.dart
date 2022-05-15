@@ -10,7 +10,8 @@ class Toaster {
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       textColor: Colors.black,
-      backgroundColor: Styles.APred.shade900,
+      backgroundColor: Colors.grey.shade300.withOpacity(0.9),
+      fontSize: 16.0,
       webPosition: "center",
       webBgColor: "#e0e0e0",
     );
