@@ -11,6 +11,13 @@ class Styles {
     ),
   );
 
+  static TextStyle headerStyleH2 = GoogleFonts.ubuntu(
+    textStyle: const TextStyle(
+      fontWeight: FontWeight.bold,
+      fontSize: 22,
+    ),
+  );
+
   static TextStyle textColorBlack = const TextStyle(
     color: Colors.black,
     // fontFamily: GoogleFonts.ubuntu().fontFamily,

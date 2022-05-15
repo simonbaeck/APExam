@@ -272,7 +272,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     final docStudent =
     FirebaseFirestore.instance.collection("studenten").doc(studentId);
     // Update examen afgelegd
-    docStudent.update({"examActive": false}).catchError((e) => print(e));
+    docStudent.update({"examActive": true}).catchError((e) => print(e));
     // Update locatie
     getCurrentLocation().then((Position position) => {
       docStudent.update({

@@ -28,6 +28,7 @@ class _StudentDetailState extends State<StudentDetail> {
           snapshot.docs.map((doc) => Answer.fromJson(doc.data())).toList());
 
   late List<Answer> answers = [];
+  bool _toggled = false;
 
   @override
   void initState() {
@@ -45,6 +46,21 @@ class _StudentDetailState extends State<StudentDetail> {
         padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
         child: Column(
           children: [
+            Container(
+              width: double.infinity,
+              alignment: Alignment.topLeft,
+              child: Column(
+                children: [
+                  Text(
+                    widget.student["firstName"].toString() +
+                        " " +
+                        widget.student["lastName"].toString(),
+                    style: Styles.headerStyleH1,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20.0),
             Container(
               width: double.infinity,
               height: 250.0,
@@ -133,29 +149,14 @@ class _StudentDetailState extends State<StudentDetail> {
               child: Column(
                 children: [
                   Text(
-                    widget.student["firstName"].toString() +
-                        " " +
-                        widget.student["lastName"].toString(),
-                    style: Styles.headerStyleH1,
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20.0),
-            Container(
-              width: double.infinity,
-              alignment: Alignment.topLeft,
-              child: Column(
-                children: [
-                  Text(
                     "Antwoorden",
-                    style: Styles.headerStyleH1,
+                    style: Styles.headerStyleH2,
                   ),
                 ],
               ),
             ),
             Container(
-              height: 300,
+              height: 100,
               child: ListView(
                 children: [
                   StreamBuilder<List<Answer>>(
@@ -180,10 +181,34 @@ class _StudentDetailState extends State<StudentDetail> {
                 children: [
                   Text(
                     "Punten",
-                    style: Styles.headerStyleH1,
+                    style: Styles.headerStyleH2,
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 20.0),
+            Container(
+              width: double.infinity,
+              alignment: Alignment.topLeft,
+              child: Column(
+                children: [
+                  Text(
+                    "Instellingen",
+                    style: Styles.headerStyleH2,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 10.0),
+            SwitchListTile(
+              title: const Text("Extra tijd"),
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _toggled,
+              onChanged: (bool value) {
+                setState(() => {
+                  _toggled = value
+                });
+              },
             ),
           ],
         ),
