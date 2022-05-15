@@ -199,7 +199,7 @@ class _StudentDetailState extends State<StudentDetail> {
                 ],
               ),
             ),
-            const SizedBox(height: 10.0),
+            const SizedBox(height: 20.0),
             SwitchListTile(
               title: const Text("Extra tijd"),
               controlAffinity: ListTileControlAffinity.leading,
@@ -230,7 +230,6 @@ Widget answersList(List<Answer> answers, String currentStudent) {
       child: Column(
         children: [
           ListView.builder(
-            padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
             shrinkWrap: true,
             controller: ScrollController(),
             itemCount: studentAnswers.length,
@@ -249,8 +248,7 @@ Widget answersList(List<Answer> answers, String currentStudent) {
     );
   } else {
     return Container(
-        padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
-        child: Card(
+        child: const Card(
           child: ListTile(title: Text("Geen antwoorden gevonden.")),
         ));
   }
