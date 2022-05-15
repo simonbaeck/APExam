@@ -10,7 +10,7 @@ import 'package:flutter_project/student/studentlogin.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:geolocator/geolocator.dart';
-
+import 'dart:html' as html;
 import '../../services/toaster.dart';
 
 class QuestionsScreen extends StatefulWidget {
@@ -29,19 +29,19 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
     print("didChangeAppLifecycleState is called");
   }
 
+<<<<<<< HEAD
   Stream<List<Question>> readQuestions() => FirebaseFirestore.instance
       .collection('vragen')
       .snapshots()
       .map((snapshot) =>
       snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList());
 
-    if (state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.detached) return;
-
-    final isBackground = state == AppLifecycleState.paused;
-
-    if (isBackground) {
-      print("Is closed");
+=======
+>>>>>>> Aiman_OutFocus
+    if (state == AppLifecycleState.inactive) {
+      print('app inactive MINIMIZED!');
+    } else if (state == AppLifecycleState.resumed) {
+      print('app resumed');
     }
   }
 
@@ -210,7 +210,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
   @override
   void initState() {
     super.initState();
-    print("initState is called");
+    html.window.onBeforeUnload.listen((event) async {
+      print("onBeforeUnload is called");
+    });
+
     WidgetsBinding.instance?.addObserver(this);
     updateStudent(studentId: widget.currentStudentId);
   }
