@@ -9,7 +9,7 @@ import 'package:flutter_project/student/questiondetail.dart';
 import 'package:flutter_project/student/studentlogin.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'dart:html' as html;
+import 'package:geolocator/geolocator.dart';
 
 import '../../services/toaster.dart';
 
@@ -20,20 +20,37 @@ class QuestionsScreen extends StatefulWidget {
 
   @override
   State<QuestionsScreen> createState() => _QuestionsScreenState();
-
-
-}
-@override
-void initState(){
-  print("Test");
-
 }
 
-class _QuestionsScreenState extends State<QuestionsScreen> {
+class _QuestionsScreenState extends State<QuestionsScreen>
+    with WidgetsBindingObserver {
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print("didChangeAppLifecycleState is called");
+
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached) return;
+
+    final isBackground = state == AppLifecycleState.paused;
+
+    if (isBackground) {
+      print("Is closed");
+    }
+  }
+
+  @override
+  void dispose() {
+    print("dispose is called");
+    WidgetsBinding.instance?.removeObserver(this);
+    super.dispose();
+  }
+
   Position? _currentPosition;
 
   @override
   Widget build(BuildContext context) {
+    print("build is called");
     return Scaffold(
       appBar: AppBar(
         title: Text("Vragen " + widget.currentStudentId.toString()),
@@ -51,7 +68,6 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                     .orderBy('id', descending: false)
                     .snapshots(),
                 builder: (context, snapshot) {
-
                   if (snapshot.hasError) {
                     return const Text("Error");
                   } else if (!snapshot.hasData) {
@@ -130,10 +146,29 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
     );
   }
 
-  checkOutFocus(){
-    html.window.onBeforeUnload.listen((event) async{
-      // do something
-      print("Examen verlaten");
-    });
+  @override
+  void initState() {
+    super.initState();
+    print("initState is called");
+    WidgetsBinding.instance?.addObserver(this);
+    updateStudent(studentId: widget.currentStudentId);
+  }
+
+  Future updateStudent({required String? studentId}) async {
+    final docStudent =
+        FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    // Update examen afgelegd
+    docStudent.update({"examActive": true}).catchError((e) => print(e));
+    // Update locatie
+    getCurrentLocation().then((Position position) => {
+          docStudent.update({
+            "studentLocation": GeoPoint(position.latitude, position.longitude)
+          }).catchError((e) => print(e))
+        });
+  }
+
+  Future<Position> getCurrentLocation() {
+    return Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best);
   }
 }
