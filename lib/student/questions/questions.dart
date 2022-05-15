@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:html';
+import 'dart:html' as html;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,7 @@ class QuestionsScreen extends StatefulWidget {
   State<QuestionsScreen> createState() => _QuestionsScreenState();
 }
 
-class _QuestionsScreenState extends State<QuestionsScreen> {
+class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingObserver {
   final textFieldController = TextEditingController();
 
   List<Answer> antwoorden = [];
@@ -32,9 +32,36 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
   int aantalVragen = 0;
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    print("didChangeAppLifecycleState is called");
+
+    final isBackground = state == AppLifecycleState.paused;
+
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.detached)
+      return;
+
+    if (isBackground) {
+      if (state == AppLifecycleState.inactive) {
+        print('app inactive MINIMIZED!');
+      } else if (state == AppLifecycleState.resumed) {
+        print('app resumed');
+      }
+    }
+  }
+
+  @override
   void initState() {
     if (mounted) {
       super.initState();
+
+      html.window.onBeforeUnload.listen((event) async {
+        print("onBeforeUnload is called");
+      });
+
+      WidgetsBinding.instance?.addObserver(this);
+
       updateStudent(studentId: widget.currentStudentId);
       startTimer();
 
