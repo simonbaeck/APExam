@@ -20,6 +20,8 @@ class ExamensScreen extends StatefulWidget {
 }
 
 class _ExamensScreenState extends State<ExamensScreen> {
+  bool isDeleting = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +34,8 @@ class _ExamensScreenState extends State<ExamensScreen> {
             children: [
               /*Open vraag*/
               StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('vragen').snapshots(),
+                stream:
+                    FirebaseFirestore.instance.collection('vragen').snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return const Text("Error");
@@ -53,7 +56,8 @@ class _ExamensScreenState extends State<ExamensScreen> {
                                 return GestureDetector(
                                   child: Card(
                                     child: ListTile(
-                                      subtitle: Text("${ds["type"].toString().capitalizeString()} vraag"),
+                                      subtitle: Text(
+                                          "${ds["type"].toString().capitalizeString()} vraag"),
                                       title: Text(ds["vraag"]),
                                       trailing: Row(
                                         mainAxisSize: MainAxisSize.min,
@@ -138,6 +142,13 @@ class _ExamensScreenState extends State<ExamensScreen> {
           SpeedDialChild(
               child: const Icon(Icons.delete, color: Colors.white),
               backgroundColor: Styles.APred,
+              label: "Verwijder alle vragen",
+              onTap: () {
+                removeVragen();
+              }),
+          SpeedDialChild(
+              child: const Icon(Icons.delete, color: Colors.white),
+              backgroundColor: Styles.APred,
               label: "Verwijder alle antwoorden",
               onTap: () {
                 removeAnswers();
@@ -177,6 +188,30 @@ class _ExamensScreenState extends State<ExamensScreen> {
       }
 
       Toaster().showToastMsg("Antwoorden verwijderd");
+    } on FirebaseException catch (e) {
+      Toaster().showToastMsg(e.message);
+    }
+  }
+
+  Future removeVragen() async {
+    try {
+      final collection = FirebaseFirestore.instance.collection('vragen');
+      final snapshots = await collection.get();
+      final doclength = snapshots.docs.length;
+
+      setState(() {
+        isDeleting = true;
+      });
+
+      for (var doc in snapshots.docs) {
+        await doc.reference.delete();
+      }
+
+      setState(() {
+        isDeleting = false;
+      });
+
+      Toaster().showToastMsg("$doclength Vragen verwijderd");
     } on FirebaseException catch (e) {
       Toaster().showToastMsg(e.message);
     }
