@@ -22,12 +22,18 @@ class QuestionsScreen extends StatefulWidget {
   State<QuestionsScreen> createState() => _QuestionsScreenState();
 }
 
-class _QuestionsScreenState extends State<QuestionsScreen>
-    with WidgetsBindingObserver {
+class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     print("didChangeAppLifecycleState is called");
+  }
+
+  Stream<List<Question>> readQuestions() => FirebaseFirestore.instance
+      .collection('vragen')
+      .snapshots()
+      .map((snapshot) =>
+      snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList());
 
     if (state == AppLifecycleState.inactive ||
         state == AppLifecycleState.detached) return;
@@ -46,9 +52,64 @@ class _QuestionsScreenState extends State<QuestionsScreen>
     super.dispose();
   }
 
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text('Questions'),
+    ),
+    body: StreamBuilder<List<Question>>(
+        stream: readQuestions(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            questions = snapshot.data!;
+            if (questions[_questionIndex].type == "open") {
+              return openQuestion(questions, _questionIndex);
+            } else if (questions[_questionIndex].type == "correctie") {
+              return correctionQuestion(questions, _questionIndex);
+            } else {
+              return multipleChoiceQuestion(questions, _questionIndex);
+            }
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        }),
+  );
+
+  Widget openQuestion(List<Question> questions, int index) {
+    return Container(
+      child: Column(
+        children: [
+          Text(
+            questions[index].vraag,
+            style: Styles.headerStyleH1,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          TextField(
+            controller: textFieldController,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(),
+              labelText: 'Antwoord',
+            ),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              addAnswer(question: questions[index], open: true);
+              _answerQuestion();
+            },
+            child: const Text('Beantwoorden'),
+          )
+        ],
+      ),
+    );
+  }
+
   Position? _currentPosition;
 
-  @override
+  /*@override
   Widget build(BuildContext context) {
     print("build is called");
     return Scaffold(
@@ -144,7 +205,7 @@ class _QuestionsScreenState extends State<QuestionsScreen>
         ),
       ),
     );
-  }
+  }*/
 
   @override
   void initState() {
@@ -168,7 +229,48 @@ class _QuestionsScreenState extends State<QuestionsScreen>
   }
 
   Future<Position> getCurrentLocation() {
+    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+
+  @override
+  void initState() {
+    super.initState();
+    updateStudent(studentId: widget.currentStudentId);
+  }
+
+  Future updateStudent({required String? studentId}) async {
+    final docStudent =
+    FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    // Update examen afgelegd
+    docStudent.update({"examActive": true}).catchError((e) => print(e));
+    // Update locatie
+    getCurrentLocation().then((Position position) => {
+      docStudent.update({
+        "studentLocation": GeoPoint(position.latitude, position.longitude)
+      }).catchError((e) => print(e))
+    });
+  }
+
+  Future<Position> getCurrentLocation() {
     return Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.best);
+  }
+
+  Future addAnswer({required Question question, required bool open}) async {
+    final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
+    final Question _question = question;
+
+    _question.studentId = widget.currentStudentId!;
+    _question.antwoord = textFieldController.text;
+
+    ///Add to database
+    if (open) {
+      await docAnswer.set(question.toJsonOpen()).then((res) {
+        Toaster().showToastMsg("vraag beantwoord");
+      });
+    } else {
+      await docAnswer.set(question.toJsonMultiple()).then((res) {
+        Toaster().showToastMsg("vraag beantwoord");
+      });
+    }
   }
 }
