@@ -146,13 +146,6 @@ class _ExamensScreenState extends State<ExamensScreen> {
               onTap: () {
                 removeVragen();
               }),
-          SpeedDialChild(
-              child: const Icon(Icons.delete, color: Colors.white),
-              backgroundColor: Styles.APred,
-              label: "Verwijder alle antwoorden",
-              onTap: () {
-                removeAnswers();
-              }),
         ],
       ),
     );
@@ -173,21 +166,6 @@ class _ExamensScreenState extends State<ExamensScreen> {
       final docVraag =
           FirebaseFirestore.instance.collection('codecorrectie').doc(inpId);
       await docVraag.delete();
-    } on FirebaseException catch (e) {
-      Toaster().showToastMsg(e.message);
-    }
-  }
-
-  Future removeAnswers() async {
-    try {
-      final collection = FirebaseFirestore.instance.collection('antwoorden');
-      final snapshots = await collection.get();
-
-      for (var doc in snapshots.docs) {
-        await doc.reference.delete();
-      }
-
-      Toaster().showToastMsg("Antwoorden verwijderd");
     } on FirebaseException catch (e) {
       Toaster().showToastMsg(e.message);
     }

@@ -28,53 +28,61 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('Questions'),
-        ),
-        body: correctionQuestion(),
-      );
+  Widget build(BuildContext context) => WillPopScope(
+    onWillPop: () async {
+      Answer toAdd = Answer();
+      toAdd.questionId = widget.question.id;
+      toAdd.antwoord = textFieldController.text;
+      toAdd.studentId = widget.studentId;
+      Toaster().showToastMsg("Antwoord opgeslagen");
+      Navigator.of(context).pop(toAdd);
+      return false;
+    },
+    child: Scaffold(
+      appBar: AppBar(),
+      body: correctionQuestion(),
+    ),
+  );
 
   Widget correctionQuestion() {
-    return Container(
-      child: Column(
-        children: [
-          Text(
-            'Corrigeer volgende code:',
-            style: Styles.headerStyleH1,
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Corrigeer volgende code:',
+                style: Styles.headerStyleH2,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Text(
+                widget.question.vraag,
+                style: Styles.textColorBlack,
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              TextField(
+                controller: textFieldController,
+                keyboardType: TextInputType.multiline,
+                style: const TextStyle(fontSize: 20, height: 1.35),
+                maxLines: null,
+                minLines: 3,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: "Antwoord",
+                ),
+              ),
+              const SizedBox(height: 20,),
+            ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          Text(
-            widget.question.vraag,
-            style: Styles.textColorBlack,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextFormField(
-            controller: textFieldController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Correctie',
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Answer toAdd = Answer();
-              toAdd.questionId = widget.question.id;
-              toAdd.antwoord = textFieldController.text;
-              toAdd.studentId = widget.studentId;
-              Toaster().showToastMsg("Vraag beantwoord");
-              Navigator.of(context).pop(toAdd);
-            },
-            child: const Text('Bevestig'),
-          )
-        ],
+        ),
       ),
     );
   }

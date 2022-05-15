@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:html' as html;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,43 +25,45 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
 
   List<Answer> antwoorden = [];
 
-  static const maxSeconds = 60;
-  int seconds = maxSeconds;
+  static const examMinutes = 60;
+  int seconds = Duration(minutes: examMinutes).inSeconds;
   Timer? timer;
   int aantalVragen = 0;
+  bool extraTime = false;
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-    print("didChangeAppLifecycleState is called");
-
-    final isBackground = state == AppLifecycleState.paused;
-
-    if (state == AppLifecycleState.inactive ||
-        state == AppLifecycleState.detached)
-      return;
-
-    if (isBackground) {
-      if (state == AppLifecycleState.inactive) {
-        print('app inactive MINIMIZED!');
-      } else if (state == AppLifecycleState.resumed) {
-        print('app resumed');
-      }
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   super.didChangeAppLifecycleState(state);
+  //   print("didChangeAppLifecycleState is called");
+  //
+  //   final isBackground = state == AppLifecycleState.paused;
+  //
+  //   if (state == AppLifecycleState.inactive ||
+  //       state == AppLifecycleState.detached)
+  //     return;
+  //
+  //   if (isBackground) {
+  //     if (state == AppLifecycleState.inactive) {
+  //       print('app inactive MINIMIZED!');
+  //     } else if (state == AppLifecycleState.resumed) {
+  //       print('app resumed');
+  //     }
+  //   }
+  // }
 
   @override
   void initState() {
     if (mounted) {
       super.initState();
 
-      html.window.onBeforeUnload.listen((event) async {
-        print("onBeforeUnload is called");
-      });
+      // html.window.onBeforeUnload.listen((event) async {
+      //   print("onBeforeUnload is called");
+      // });
 
-      WidgetsBinding.instance?.addObserver(this);
+      // WidgetsBinding.instance?.addObserver(this);
 
       updateStudent(studentId: widget.currentStudentId);
+      getExtraTime();
       startTimer();
 
       FirebaseFirestore.instance.collection("vragen").get().then((querySnapshot) {
@@ -86,7 +87,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            const Text('Questions'),
+            const Text('Vragen'),
             buildTimer(),
           ],
         ),
@@ -216,7 +217,13 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
                               },
                               child: Card(
                                 child: ListTile(
-                                  title: Text("${ds["vraag"]}"),
+                                  title: Text("Vraag ${index}"),
+                                  subtitle: Text("${ds["vraag"]}"),
+                                  trailing: antwoorden.contains(antwoorden.firstWhere((e) => e.questionId == ds["id"] && e.studentId == widget.currentStudentId, orElse: () => Answer()))
+                                    ? const Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                    ) : const SizedBox(height: 0.0)
                                 ),
                               ),
                             );
@@ -229,27 +236,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
                   }
                 },
               ),
-              const SizedBox(
-                height: 20,
-              ),
-              Container(
-                alignment: Alignment.topLeft,
-                child: ElevatedButton(
-                    onPressed: () {
-                      print(antwoorden);
-                    },
-                    style: ButtonStyle(
-                      textStyle: MaterialStateProperty.all(
-                        const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      minimumSize: MaterialStateProperty.all(
-                          const Size(double.infinity, 65)),
-                    ),
-                    child: Text("check answers".toUpperCase())),
-              ),
+              const SizedBox(height: 20),
               Container(
                 alignment: Alignment.topLeft,
                 child: ElevatedButton(
@@ -277,7 +264,29 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
 
   Widget buildTimer() {
     if (mounted) {
-      return Text('Resterende tijd: $seconds');
+      final duration = Duration(seconds: this.seconds);
+      final hours = duration.inHours;
+      final minutes = duration.inMinutes % 60;
+      final seconds = this.seconds % 60;
+
+      final hoursString = '$hours'.padLeft(2, '0');
+      final minutesString = '$minutes'.padLeft(2, '0');
+      final secondsString = '$seconds'.padLeft(2, '0');
+
+      return Row(
+        children: <Widget>[
+          const Icon(
+            Icons.alarm,
+          ),
+          const SizedBox(width: 6.5),
+          Text(
+            '$hoursString:$minutesString:$secondsString',
+            style: const TextStyle(
+                fontWeight: FontWeight.bold
+            ),
+          ),
+        ],
+      );
     } else {
       return const SizedBox(height: 0.0);
     }
@@ -287,6 +296,19 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
     timer = Timer.periodic(Duration(seconds: 1), (_) {
       if (seconds > 0) {
         if (mounted) {
+          if (seconds == Duration(minutes: 15).inSeconds) {
+            Toaster().showToastMsg("Je hebt nog 15 minuten over!");
+          }
+          if (seconds == Duration(minutes: 10).inSeconds) {
+            Toaster().showToastMsg("Je hebt nog 10 minuten over!");
+          }
+          if (seconds == Duration(minutes: 5).inSeconds) {
+            Toaster().showToastMsg("Je hebt nog 5 minuten over!");
+          }
+          if (seconds == Duration(minutes: 1).inSeconds) {
+            Toaster().showToastMsg("Je hebt nog 1 minuut over!");
+          }
+
           setState(() => seconds--);
         }
       } else {
@@ -296,34 +318,47 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
   }
 
   Future updateStudent({required String? studentId}) async {
-    final docStudent =
-    FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    final docStudent = FirebaseFirestore.instance.collection("studenten").doc(studentId);
     // Update examen afgelegd
-    docStudent.update({"examActive": true}).catchError((e) => print(e));
+    await docStudent.update({"examActive": false}).catchError((e) => print(e));
     // Update locatie
-    getCurrentLocation().then((Position position) => {
+    await getCurrentLocation().then((Position position) => {
       docStudent.update({
         "studentLocation": GeoPoint(position.latitude, position.longitude)
       }).catchError((e) => print(e))
     });
   }
 
-  Future<bool> getExtraTime() async {
+  Future getExtraTime() async {
     CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
     DocumentReference documentReference = collectionReference.doc(widget.currentStudentId);
     Future<DocumentSnapshot> docSnapshot = documentReference.get();
 
-    return await docSnapshot.then((data) {
-      if (data['extraTime'] == false) {
-        return false;
-      } else {
-        return true;
-      }
+    await docSnapshot.then((data) {
+      setState(() {
+        if (data['extraTime'] == true) {
+          seconds = seconds + Duration(minutes: 20).inSeconds;
+        }
+      });
     });
   }
 
-  Future<Position> getCurrentLocation() {
-    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+  Future<Position> getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.deniedForever) {
+        print("No location possible");
+      }
+    }
+
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best,
+      forceAndroidLocationManager: true,
+    );
   }
 
   Future addAnswersToDatabase() async {

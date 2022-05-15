@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/toaster.dart';
+import '../../styles/styles.dart';
 import 'answer.class.dart';
 import 'multiquestion.class.dart';
 
@@ -16,12 +17,23 @@ class MultipleChoiceQuestion extends StatefulWidget {
 
 class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('Questions'),
-        ),
-        body: multipleChoiceQuestion(),
-      );
+  Widget build(BuildContext context) => WillPopScope(
+    onWillPop: () async {
+      Answer toAdd = Answer();
+      toAdd.questionId = widget.question.id;
+      toAdd.antwoord = defaultChoice;
+      toAdd.studentId = widget.studentId;
+      Toaster().showToastMsg("Antwoord opgeslagen");
+      Navigator.of(context).pop(toAdd);
+      return false;
+    },
+    child: Scaffold(
+      appBar: AppBar(
+        title: Text('Questions'),
+      ),
+      body: multipleChoiceQuestion(),
+    ),
+  );
 
   late String defaultChoice;
   int defaultIndex = 0;
@@ -39,47 +51,36 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
 
   @override
   Widget multipleChoiceQuestion() {
-    return Container(
-      child: Column(
-        children: [
-          Column(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: Container(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Wrap(
-                children: [
-                  Container(
-                    child: Column(
-                      children: widget.question.antwoorden.map((e) => RadioListTile(
-                          title: Text(e),
-                          value: e.toString(),
-                          groupValue: defaultChoice,
-                          onChanged: (value) {
-                            setState(() {
-                              defaultChoice = e;
-                            });
-                          }
-                      )).toList(),
-                    ),
-                  )
-                ],
+              Text(
+                widget.question.vraag,
+                style: Styles.headerStyleH2,
+              ),
+              const SizedBox(height: 20),
+              Column(
+                children: widget.question.antwoorden.map((e) => RadioListTile(
+                  title: Text(e),
+                  value: e.toString(),
+                  groupValue: defaultChoice,
+                  onChanged: (value) {
+                    setState(() {
+                      defaultChoice = e;
+                    });
+                  }
+                )).toList(),
               ),
             ],
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Answer toAdd = Answer();
-              toAdd.questionId = widget.question.id;
-              toAdd.antwoord = defaultChoice;
-              toAdd.studentId = widget.studentId;
-              Toaster().showToastMsg("Vraag beantwoord");
-              Navigator.of(context).pop(toAdd);
-            },
-            child: const Text('Beantwoorden'),
-          )
-        ],
-      )
+        ),
+      ),
     );
   }
 }

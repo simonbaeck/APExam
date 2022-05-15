@@ -33,47 +33,51 @@ class _OpenQuestionState extends State<OpenQuestion> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('Questions'),
-        ),
-        body: openquestion(),
-      );
-
-  Widget openquestion() {
-    return Container(
-      child: Column(
-        children: [
-          Text(
-            widget.question.vraag,
-            style: Styles.headerStyleH1,
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          TextFormField(
-            controller: textFieldController,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Antwoord',
+  Widget build(BuildContext context) => WillPopScope(
+    onWillPop: () async {
+      Answer toAdd = Answer();
+      toAdd.questionId = widget.question.id;
+      toAdd.antwoord = textFieldController.text;
+      toAdd.studentId = widget.studentId;
+      Toaster().showToastMsg("Antwoord opgeslagen");
+      Navigator.of(context).pop(toAdd);
+      return false;
+    },
+    child: Scaffold(
+      appBar: AppBar(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 30.0),
+        child: Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.question.vraag,
+                  style: Styles.headerStyleH2,
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                TextFormField(
+                  controller: textFieldController,
+                  style: const TextStyle(fontSize: 20),
+                  keyboardType: TextInputType.text,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    hintText: "Antwoord",
+                  ),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Answer toAdd = Answer();
-              toAdd.questionId = widget.question.id;
-              toAdd.antwoord = textFieldController.text;
-              toAdd.studentId = widget.studentId;
-              Toaster().showToastMsg("Examen ingediend");
-              Navigator.of(context).pop(toAdd);
-            },
-            child: const Text('Beantwoorden'),
-          )
-        ],
+        ),
       ),
-    );
-  }
+    ),
+  );
 }

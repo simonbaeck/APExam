@@ -77,7 +77,7 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
               Align(
                 alignment: Alignment.topLeft,
                 child: Image.asset(
-                  '../assets/AP_logo.png',
+                  'assets/AP_logo.png',
                   width: 110.0,
                   height: 64.78,
                 ),
