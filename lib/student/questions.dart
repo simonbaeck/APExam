@@ -29,12 +29,15 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
     print("didChangeAppLifecycleState is called");
   }
 
+<<<<<<< HEAD
   Stream<List<Question>> readQuestions() => FirebaseFirestore.instance
       .collection('vragen')
       .snapshots()
       .map((snapshot) =>
       snapshot.docs.map((doc) => Question.fromJson(doc.data())).toList());
 
+=======
+>>>>>>> Aiman_OutFocus
     if (state == AppLifecycleState.inactive) {
       print('app inactive MINIMIZED!');
     } else if (state == AppLifecycleState.resumed) {
