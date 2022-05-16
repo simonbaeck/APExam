@@ -8,6 +8,7 @@ class Student {
   late bool examActive = false;
   late GeoPoint studentLocation = const GeoPoint(51.23007955208338, 4.416187171855199);
   late bool extraTime = false;
+  late int exitedExamCount = 0;
 
   // Student(this.id, this.firstname, this.lastname, this.snumber);
 
@@ -21,6 +22,7 @@ class Student {
            '\texamActive: $examActive,\n'
            '\tstudentLocation: $studentLocation'
            '\textraTime: $extraTime'
+           '\texitedExamCount: $exitedExamCount'
            '\n}';
   }
 
@@ -32,7 +34,8 @@ class Student {
       'sNumber': sNumber,
       'examActive': examActive,
       'studentLocation': studentLocation,
-      'extraTime': extraTime
+      'extraTime': extraTime,
+      'exitedExamCount': exitedExamCount,
     };
   }
 }
