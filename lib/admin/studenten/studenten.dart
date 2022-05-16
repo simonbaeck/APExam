@@ -88,36 +88,13 @@ class _StudentenScreenState extends State<StudentenScreen> {
                       );
                     } else if (snapshot.data!.docs.isEmpty && !isDeleting) {
                       return Container(
-                        padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
-                        child: Card(
-                          child: Padding(
-                            padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
-                            child: ListTile(
-                              title: const Padding(
-                                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
-                                child: Text("Er zijn geen studenten aanwezig")
-                              ),
-                              subtitle: Row(
-                                children: [
-                                  const Text("Voeg studenten toe via de "),
-                                  Container(
-                                    width: 20.0,
-                                    height: 20.0,
-                                    margin: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
-                                    child: const Icon(
-                                      Icons.settings,
-                                      size: 13,
-                                      color: Colors.white,
-                                    ),
-                                    decoration: BoxDecoration(
-                                        color: Styles.APred.shade900,
-                                        shape: BoxShape.circle
-                                    ),
-                                  ),
-                                  const Text(" knop")
-                                ],
-                              ),
-                            ),
+                        padding: const EdgeInsets.fromLTRB(
+                            26.0, 30.0, 26.0, 30.0),
+                        child: const Card(
+                          child: ListTile(
+                            title: Text("Er zijn geen studenten aanwezig"),
+                            subtitle: Text(
+                                "Klik rechtsonder op het + icoontje om studenten toe te voegen."),
                           ),
                         ),
                       );

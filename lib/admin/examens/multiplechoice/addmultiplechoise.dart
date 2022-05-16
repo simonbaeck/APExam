@@ -38,10 +38,8 @@ class _AddMultplechoice extends State<AddMultplechoice> {
       if (antwoordController.text.isEmpty && hasContinued) {
         hasContinued = false;
         vragen = [];
-        Choice init = Choice(index: 0, vraag: "");
-        vragen.insert(0, init);
-        defaultChoice = vragen[0].vraag.toString();
       }
+
       antwoordController.text.split(";").length > 1 ? isButtonStep1Disabled = false : isButtonStep1Disabled = true;
     });
   }
@@ -49,9 +47,6 @@ class _AddMultplechoice extends State<AddMultplechoice> {
   @override
   void initState() {
     super.initState();
-    Choice init = Choice(index: 0, vraag: "");
-    vragen.insert(0, init);
-    defaultChoice = vragen[0].toString();
     antwoordController.addListener(onValueChange);
   }
 
@@ -148,7 +143,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                                         groupValue: defaultIndex,
                                         onChanged: (value) {
                                           setState(() {
-                                            defaultChoice = e.vraag.toString();
+                                            defaultChoice = e.vraag;
                                             defaultIndex = e.index;
                                           });
                                         }
@@ -161,7 +156,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
                         ),
                         const SizedBox(height: 20.0),
                         ElevatedButton(
-                            onPressed: defaultChoice == "" ? null : () => {
+                            onPressed: () => {
                               addmuliplechoice(
                                   inpOpgave: vraagController.text,
                               )
@@ -191,18 +186,13 @@ class _AddMultplechoice extends State<AddMultplechoice> {
   }
 
   Future addmuliplechoice({required String inpOpgave}) async {
-    vragen.removeAt(0);
-    for (var i in vragen) {
-      i.index -= 1;
-    }
-
     final docVraag = FirebaseFirestore.instance.collection("vragen").doc();
     final Multipechoice multipechoice = Multipechoice();
     multipechoice.id = docVraag.id;
     multipechoice.opgave = inpOpgave;
     multipechoice.type = "multiplechoice";
     multipechoice.antwoorden = vragen.map((e) => e.vraag).toList();
-    multipechoice.oplossing = defaultChoice.toString();
+    multipechoice.oplossing = defaultChoice;
 
     await docVraag.set(multipechoice.toMap()).then((res) {
       Toaster().showToastMsg("vraag toegevoegd");
@@ -211,7 +201,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
   }
 
   createList({ required String answers }) {
-    var counter = 1;
+    var counter = 0;
     answers.split(";").forEach((element) {
       Choice toAdd = Choice(index: counter, vraag: element);
       vragen.add(toAdd);
@@ -219,8 +209,7 @@ class _AddMultplechoice extends State<AddMultplechoice> {
     });
 
     setState(() {
-      print(vragen);
-      defaultChoice = vragen[0].vraag.toString();
+      defaultChoice = vragen[0].toString();
       hasContinued = true;
     });
   }
