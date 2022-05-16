@@ -156,8 +156,9 @@ class _StudentDetailState extends State<StudentDetail> {
               ),
             ),
             Container(
-              height: 100,
+              padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
               child: ListView(
+                shrinkWrap: true,
                 children: [
                   StreamBuilder<List<Answer>>(
                       stream: readAnswers(),
