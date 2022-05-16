@@ -51,6 +51,7 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
   @override
   void initState() {
     super.initState();
+    widget.question.antwoorden.insert(0, "");
     defaultChoice = widget.question.antwoorden[0];
     if (widget.antwoord != null) {
       defaultChoice = widget.antwoord!.antwoord;
