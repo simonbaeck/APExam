@@ -28,12 +28,14 @@ class _StudentDetailState extends State<StudentDetail> {
           snapshot.docs.map((doc) => Answer.fromJson(doc.data())).toList());
 
   late List<Answer> answers = [];
-  bool _toggled = false;
+  late bool _toggled = false;
+  bool toggleIsLoading = true;
 
   @override
   void initState() {
     super.initState();
     position = widget.student["studentLocation"];
+    getExtraTime(studentId: widget.student["id"]);
   }
 
   @override
@@ -127,19 +129,23 @@ class _StudentDetailState extends State<StudentDetail> {
             Container(
               width: double.infinity,
               alignment: Alignment.topLeft,
-              child: const Card(
-                shape: RoundedRectangleBorder(
+              child: Card(
+                shape: const RoundedRectangleBorder(
                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                 ),
                 color: Styles.APred,
-                child: ListTile(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: ListTile(
                     title: Text(
-                  "Deze student heeft het examen 0 keer verlaten",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
+                      "Deze student heeft het examen " + widget.student["exitedExamCount"].toString() + " keer verlaten",
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                      ),
+                    ),
                   ),
-                )),
+                ),
               ),
             ),
             const SizedBox(height: 20.0),
@@ -155,9 +161,9 @@ class _StudentDetailState extends State<StudentDetail> {
                 ],
               ),
             ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
-              child: ListView(
+            const SizedBox(height: 10.0),
+            ListView(
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 children: [
                   StreamBuilder<List<Answer>>(
@@ -173,7 +179,7 @@ class _StudentDetailState extends State<StudentDetail> {
                       }),
                 ],
               ),
-            ),
+
             const SizedBox(height: 20.0),
             Container(
               width: double.infinity,
@@ -201,18 +207,49 @@ class _StudentDetailState extends State<StudentDetail> {
               ),
             ),
             const SizedBox(height: 20.0),
-            SwitchListTile(
+            toggleIsLoading == false ? SwitchListTile(
               title: const Text("Extra tijd"),
               controlAffinity: ListTileControlAffinity.leading,
               value: _toggled,
               onChanged: (bool value) {
-                setState(() => {_toggled = value});
+                setState(() {
+                  updateExtraTime(studentId: widget.student["id"]);
+                });
               },
-            ),
+            ) : const CircularProgressIndicator(),
           ],
         ),
       ),
     );
+  }
+
+  Future updateExtraTime({ required String? studentId }) async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference = collectionReference.doc(studentId);
+    Future<DocumentSnapshot> docSnapshot = documentReference.get();
+
+    await docSnapshot.then((data) {
+      toggleIsLoading = true;
+      documentReference.update({"extraTime": !_toggled }).then((value) {
+        setState(() {
+          _toggled = !_toggled;
+          toggleIsLoading = false;
+        });
+      });
+    });
+  }
+
+  Future getExtraTime({ required String? studentId }) async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference = collectionReference.doc(studentId);
+    Future<DocumentSnapshot> docSnapshot = documentReference.get();
+
+    await docSnapshot.then((data) {
+      setState(() {
+        _toggled = data['extraTime'];
+        toggleIsLoading = false;
+      });
+    });
   }
 }
 
@@ -236,8 +273,8 @@ Widget answersList(List<Answer> answers, String currentStudent) {
               return GestureDetector(
                 child: Card(
                   child: ListTile(
-                    title: Text(studentAnswers[index].vraag),
-                    subtitle: Text(studentAnswers[index].antwoord),
+                    title: studentAnswers[index].antwoord == "" ? Text("Geen antwoord ingevuld") : Text(studentAnswers[index].antwoord),
+                    subtitle: Text(studentAnswers[index].vraag),
                   ),
                 ),
               );
@@ -251,5 +288,12 @@ Widget answersList(List<Answer> answers, String currentStudent) {
         child: const Card(
       child: ListTile(title: Text("Geen antwoorden gevonden.")),
     ));
+  }
+}
+
+class BlockScroll extends ScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(BuildContext context, Widget child, ScrollableDetails details) {
+    return child;
   }
 }

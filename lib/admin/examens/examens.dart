@@ -78,16 +78,39 @@ class _ExamensScreenState extends State<ExamensScreen> {
                             ),
                           )
                         : Container(
-                            padding: const EdgeInsets.fromLTRB(
-                                26.0, 30.0, 26.0, 30.0),
-                            child: const Card(
-                              child: ListTile(
-                                title: Text("Er zijn nog geen vragen"),
-                                subtitle: Text(
-                                    "Klik rechtsonder op het + icoontje om vragen toe te voegen."),
-                              ),
+                      padding: const EdgeInsets.fromLTRB(26.0, 30.0, 26.0, 30.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 20.0),
+                          child: ListTile(
+                            title: const Padding(
+                                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 10.0),
+                                child: Text("Het examen heeft nog geen vragen")
                             ),
-                          );
+                            subtitle: Row(
+                              children: [
+                                const Text("Voeg vragen toe via de "),
+                                Container(
+                                  width: 20.0,
+                                  height: 20.0,
+                                  margin: const EdgeInsets.fromLTRB(2.0, 0.0, 2.0, 0.0),
+                                  child: const Icon(
+                                    Icons.settings,
+                                    size: 13,
+                                    color: Colors.white,
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: Styles.APred.shade900,
+                                      shape: BoxShape.circle
+                                  ),
+                                ),
+                                const Text(" knop")
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
                   }
                 },
               ),

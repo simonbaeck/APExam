@@ -263,15 +263,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
                               },
                               child: Card(
                                 child: ListTile(
-                                    title: Text("Vraag ${index}"),
+                                    title: Text("Vraag ${index + 1}"),
                                     subtitle: Text("${ds["vraag"]}"),
-                                    trailing: antwoorden.contains(
-                                            antwoorden.firstWhere(
-                                                (e) =>
-                                                    e.questionId == ds["id"] &&
-                                                    e.studentId ==
-                                                        widget.currentStudentId,
-                                                orElse: () => Answer()))
+                                    trailing: antwoorden.contains(antwoorden.firstWhere((e) => e.questionId == ds["id"] && e.studentId == widget.currentStudentId, orElse: () => Answer()))
                                         ? const Icon(
                                             Icons.check,
                                             color: Colors.green,
@@ -292,9 +286,9 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
               Container(
                 alignment: Alignment.topLeft,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: antwoorden.where((e) => e.studentId == widget.currentStudentId).length == 3 ? () {
                     addAnswersToDatabase();
-                  },
+                  } : null,
                   style: ButtonStyle(
                     textStyle: MaterialStateProperty.all(
                       const TextStyle(
@@ -370,7 +364,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
   Future updateStudent({required String? studentId}) async {
     final docStudent = FirebaseFirestore.instance.collection("studenten").doc(studentId);
     // Update examen afgelegd
-    await docStudent.update({"examActive": false}).catchError((e) => print(e));
+    await docStudent.update({"examActive": true}).catchError((e) => print(e));
     // Update locatie
     await getCurrentLocation().then((Position position) => {
           docStudent.update({
@@ -446,6 +440,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
         emptyAnswer.studentId = widget.currentStudentId!;
         emptyAnswer.questionId = "";
         emptyAnswer.antwoord = "";
+        emptyAnswer.vraag = "";
         await docAnswer.set(emptyAnswer.toMap());
       }
 
