@@ -205,9 +205,7 @@ class _StudentDetailState extends State<StudentDetail> {
               controlAffinity: ListTileControlAffinity.leading,
               value: _toggled,
               onChanged: (bool value) {
-                setState(() => {
-                  _toggled = value
-                });
+                setState(() => {_toggled = value});
               },
             ),
           ],
@@ -221,11 +219,11 @@ Widget answersList(List<Answer> answers, String currentStudent) {
   List<Answer> studentAnswers = [];
   for (var answer in answers) {
     if (currentStudent == answer.studentId) {
+      print(answer.antwoord);
       studentAnswers.add(answer);
     }
   }
   if (studentAnswers.isNotEmpty) {
-    checkCorrection("Debug.Log('Hello World') ", "Debug.Log('Hello World') ");
     return Container(
       child: Column(
         children: [
@@ -237,7 +235,8 @@ Widget answersList(List<Answer> answers, String currentStudent) {
               return GestureDetector(
                 child: Card(
                   child: ListTile(
-                    title: Text(studentAnswers[index].studentId),
+                    title: Text(studentAnswers[index].vraag),
+                    subtitle: Text(studentAnswers[index].antwoord),
                   ),
                 ),
               );
@@ -249,7 +248,7 @@ Widget answersList(List<Answer> answers, String currentStudent) {
   } else {
     return Container(
         child: const Card(
-          child: ListTile(title: Text("Geen antwoorden gevonden.")),
-        ));
+      child: ListTile(title: Text("Geen antwoorden gevonden.")),
+    ));
   }
 }

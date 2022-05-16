@@ -14,13 +14,15 @@ import 'answer.class.dart';
 
 class QuestionsScreen extends StatefulWidget {
   final String? currentStudentId;
-  const QuestionsScreen({Key? key, required this.currentStudentId}) : super(key: key);
+  const QuestionsScreen({Key? key, required this.currentStudentId})
+      : super(key: key);
 
   @override
   State<QuestionsScreen> createState() => _QuestionsScreenState();
 }
 
-class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingObserver {
+class _QuestionsScreenState extends State<QuestionsScreen>
+    with WidgetsBindingObserver {
   final textFieldController = TextEditingController();
 
   List<Answer> antwoorden = [];
@@ -66,7 +68,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
       getExtraTime();
       startTimer();
 
-      FirebaseFirestore.instance.collection("vragen").get().then((querySnapshot) {
+      FirebaseFirestore.instance
+          .collection("vragen")
+          .get()
+          .then((querySnapshot) {
         aantalVragen = querySnapshot.size;
       });
     }
@@ -102,7 +107,8 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
           child: Column(
             children: [
               StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance.collection('vragen').snapshots(),
+                stream:
+                    FirebaseFirestore.instance.collection('vragen').snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.hasError) {
                     return const Text("Error");
@@ -125,27 +131,41 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
                                   question.vraag = ds["vraag"];
                                   question.type = ds["type"];
 
-                                  if (antwoorden.where((e) => e.questionId == ds["id"]).toList().isEmpty == true) {
+                                  if (antwoorden
+                                          .where(
+                                              (e) => e.questionId == ds["id"])
+                                          .toList()
+                                          .isEmpty ==
+                                      true) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => OpenQuestion(
-                                            question: question,
-                                            studentId: widget.currentStudentId!,
-                                          )),
+                                                question: question,
+                                                vraag: ds["vraag"],
+                                                studentId:
+                                                    widget.currentStudentId!,
+                                              )),
                                     ).then((value) => antwoorden.add(value));
                                   } else {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => OpenQuestion(
+                                        builder: (context) => OpenQuestion(
                                             question: question,
+                                            vraag: ds["vraag"],
                                             studentId: widget.currentStudentId!,
-                                            antwoord: antwoorden.singleWhere((e) => e.questionId == ds["id"])),
-                                          ),
+                                            antwoord: antwoorden.singleWhere(
+                                                (e) =>
+                                                    e.questionId == ds["id"])),
+                                      ),
                                     ).then((value) {
                                       if (value != null) {
-                                        var index = antwoorden.indexOf(antwoorden.where((e) => e.questionId == ds["id"]).first);
+                                        var index = antwoorden.indexOf(
+                                            antwoorden
+                                                .where((e) =>
+                                                    e.questionId == ds["id"])
+                                                .first);
                                         antwoorden[index] = value;
                                       }
                                     });
@@ -156,59 +176,97 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
                                   question.vraag = ds["vraag"];
                                   question.type = ds["type"];
 
-                                  if (antwoorden.where((e) => e.questionId == ds["id"]).toList().isEmpty == true) {
+                                  if (antwoorden
+                                          .where(
+                                              (e) => e.questionId == ds["id"])
+                                          .toList()
+                                          .isEmpty ==
+                                      true) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => CorrectionQuestion(
-                                            question: question,
-                                            studentId: widget.currentStudentId!,
-                                          )),
+                                          builder: (context) =>
+                                              CorrectionQuestion(
+                                                vraag: ds["vraag"],
+                                                question: question,
+                                                studentId:
+                                                    widget.currentStudentId!,
+                                              )),
                                     ).then((value) => antwoorden.add(value));
                                   } else {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => CorrectionQuestion(
-                                            question: question,
-                                            studentId: widget.currentStudentId!,
-                                            antwoord: antwoorden.singleWhere((e) => e.questionId == ds["id"])),
+                                        builder: (context) =>
+                                            CorrectionQuestion(
+                                                question: question,
+                                                vraag: ds["vraag"],
+                                                studentId:
+                                                    widget.currentStudentId!,
+                                                antwoord: antwoorden
+                                                    .singleWhere((e) =>
+                                                        e.questionId ==
+                                                        ds["id"])),
                                       ),
                                     ).then((value) {
                                       if (value != null) {
-                                        var index = antwoorden.indexOf(antwoorden.where((e) => e.questionId == ds["id"]).first);
+                                        var index = antwoorden.indexOf(
+                                            antwoorden
+                                                .where((e) =>
+                                                    e.questionId == ds["id"])
+                                                .first);
                                         antwoorden[index] = value;
                                       }
                                     });
                                   }
                                 } else {
-                                  MultiChoiceQuestion mquestion = MultiChoiceQuestion();
+                                  MultiChoiceQuestion mquestion =
+                                      MultiChoiceQuestion();
                                   mquestion.id = ds["id"];
                                   mquestion.vraag = ds["vraag"];
                                   mquestion.type = ds["type"];
-                                  mquestion.antwoorden = List<String>.from(ds["antwoorden"]);
+                                  mquestion.antwoorden =
+                                      List<String>.from(ds["antwoorden"]);
 
-                                  if (antwoorden.where((e) => e.questionId == ds["id"]).toList().isEmpty == true) {
+                                  if (antwoorden
+                                          .where(
+                                              (e) => e.questionId == ds["id"])
+                                          .toList()
+                                          .isEmpty ==
+                                      true) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => MultipleChoiceQuestion(
-                                            question: mquestion,
-                                            studentId: widget.currentStudentId!,
-                                          )),
+                                          builder: (context) =>
+                                              MultipleChoiceQuestion(
+                                                question: mquestion,
+                                                vraag: ds["vraag"],
+                                                studentId:
+                                                    widget.currentStudentId!,
+                                              )),
                                     ).then((value) => antwoorden.add(value));
                                   } else {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => MultipleChoiceQuestion(
-                                            question: mquestion,
-                                            studentId: widget.currentStudentId!,
-                                            antwoord: antwoorden.singleWhere((e) => e.questionId == ds["id"])),
+                                        builder: (context) =>
+                                            MultipleChoiceQuestion(
+                                                question: mquestion,
+                                                vraag: ds["vraag"],
+                                                studentId:
+                                                    widget.currentStudentId!,
+                                                antwoord: antwoorden
+                                                    .singleWhere((e) =>
+                                                        e.questionId ==
+                                                        ds["id"])),
                                       ),
                                     ).then((value) {
                                       if (value != null) {
-                                        var index = antwoorden.indexOf(antwoorden.where((e) => e.questionId == ds["id"]).first);
+                                        var index = antwoorden.indexOf(
+                                            antwoorden
+                                                .where((e) =>
+                                                    e.questionId == ds["id"])
+                                                .first);
                                         antwoorden[index] = value;
                                       }
                                     });
@@ -217,14 +275,20 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
                               },
                               child: Card(
                                 child: ListTile(
-                                  title: Text("Vraag ${index}"),
-                                  subtitle: Text("${ds["vraag"]}"),
-                                  trailing: antwoorden.contains(antwoorden.firstWhere((e) => e.questionId == ds["id"] && e.studentId == widget.currentStudentId, orElse: () => Answer()))
-                                    ? const Icon(
-                                      Icons.check,
-                                      color: Colors.green,
-                                    ) : const SizedBox(height: 0.0)
-                                ),
+                                    title: Text("Vraag ${index}"),
+                                    subtitle: Text("${ds["vraag"]}"),
+                                    trailing: antwoorden.contains(
+                                            antwoorden.firstWhere(
+                                                (e) =>
+                                                    e.questionId == ds["id"] &&
+                                                    e.studentId ==
+                                                        widget.currentStudentId,
+                                                orElse: () => Answer()))
+                                        ? const Icon(
+                                            Icons.check,
+                                            color: Colors.green,
+                                          )
+                                        : const SizedBox(height: 0.0)),
                               ),
                             );
                           },
@@ -281,9 +345,7 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
           const SizedBox(width: 6.5),
           Text(
             '$hoursString:$minutesString:$secondsString',
-            style: const TextStyle(
-                fontWeight: FontWeight.bold
-            ),
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
       );
@@ -318,20 +380,23 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
   }
 
   Future updateStudent({required String? studentId}) async {
-    final docStudent = FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    final docStudent =
+        FirebaseFirestore.instance.collection("studenten").doc(studentId);
     // Update examen afgelegd
     await docStudent.update({"examActive": false}).catchError((e) => print(e));
     // Update locatie
     await getCurrentLocation().then((Position position) => {
-      docStudent.update({
-        "studentLocation": GeoPoint(position.latitude, position.longitude)
-      }).catchError((e) => print(e))
-    });
+          docStudent.update({
+            "studentLocation": GeoPoint(position.latitude, position.longitude)
+          }).catchError((e) => print(e))
+        });
   }
 
   Future getExtraTime() async {
-    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
-    DocumentReference documentReference = collectionReference.doc(widget.currentStudentId);
+    CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference =
+        collectionReference.doc(widget.currentStudentId);
     Future<DocumentSnapshot> docSnapshot = documentReference.get();
 
     await docSnapshot.then((data) {
@@ -364,20 +429,25 @@ class _QuestionsScreenState extends State<QuestionsScreen> with WidgetsBindingOb
   Future addAnswersToDatabase() async {
     try {
       for (var antwoord in antwoorden) {
-        final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
+        final docAnswer =
+            FirebaseFirestore.instance.collection('antwoorden').doc();
         final Answer _answer = Answer();
 
         _answer.id = docAnswer.id;
         _answer.questionId = antwoord.questionId;
         _answer.studentId = antwoord.studentId;
         _answer.antwoord = antwoord.antwoord;
+        _answer.vraag = antwoord.vraag;
 
         await docAnswer.set(_answer.toMap());
       }
 
-      var aantalVragenBeantwoord = antwoorden.where((e) => e.studentId == widget.currentStudentId).length;
+      var aantalVragenBeantwoord = antwoorden
+          .where((e) => e.studentId == widget.currentStudentId)
+          .length;
       for (var i = 0; i < aantalVragen - aantalVragenBeantwoord; i++) {
-        final docAnswer = FirebaseFirestore.instance.collection('antwoorden').doc();
+        final docAnswer =
+            FirebaseFirestore.instance.collection('antwoorden').doc();
         final Answer emptyAnswer = Answer();
         emptyAnswer.id = docAnswer.id;
         emptyAnswer.studentId = widget.currentStudentId!;

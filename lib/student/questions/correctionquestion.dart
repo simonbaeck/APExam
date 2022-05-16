@@ -7,16 +7,22 @@ import 'answer.class.dart';
 class CorrectionQuestion extends StatefulWidget {
   final Question question;
   final String studentId;
+  final String vraag;
   final Answer? antwoord;
 
-  const CorrectionQuestion({Key? key, required this.question, required this.studentId, this.antwoord}) : super(key: key);
+  const CorrectionQuestion(
+      {Key? key,
+      required this.question,
+      required this.studentId,
+      required this.vraag,
+      this.antwoord})
+      : super(key: key);
 
   @override
   State<CorrectionQuestion> createState() => _CorrectionQuestionState();
 }
 
 class _CorrectionQuestionState extends State<CorrectionQuestion> {
-
   final textFieldController = TextEditingController();
 
   @override
@@ -29,20 +35,21 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
 
   @override
   Widget build(BuildContext context) => WillPopScope(
-    onWillPop: () async {
-      Answer toAdd = Answer();
-      toAdd.questionId = widget.question.id;
-      toAdd.antwoord = textFieldController.text;
-      toAdd.studentId = widget.studentId;
-      Toaster().showToastMsg("Antwoord opgeslagen");
-      Navigator.of(context).pop(toAdd);
-      return false;
-    },
-    child: Scaffold(
-      appBar: AppBar(),
-      body: correctionQuestion(),
-    ),
-  );
+        onWillPop: () async {
+          Answer toAdd = Answer();
+          toAdd.questionId = widget.question.id;
+          toAdd.antwoord = textFieldController.text;
+          toAdd.studentId = widget.studentId;
+          toAdd.vraag = widget.vraag;
+          Toaster().showToastMsg("Antwoord opgeslagen");
+          Navigator.of(context).pop(toAdd);
+          return false;
+        },
+        child: Scaffold(
+          appBar: AppBar(),
+          body: correctionQuestion(),
+        ),
+      );
 
   Widget correctionQuestion() {
     return SingleChildScrollView(
@@ -79,7 +86,9 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
                   hintText: "Antwoord",
                 ),
               ),
-              const SizedBox(height: 20,),
+              const SizedBox(
+                height: 20,
+              ),
             ],
           ),
         ),
