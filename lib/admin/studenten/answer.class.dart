@@ -6,7 +6,7 @@ class Answer {
   late String vraag;
   late String studentId;
   late String antwoord = "";
-  late int punt;
+  late int score;
 
   Answer({
     required this.studentId,
@@ -19,6 +19,7 @@ class Answer {
       studentId: json['studentId'],
       vraag: json['vraag'],
       antwoord: json['antwoord'],
+
     );
   }
 }

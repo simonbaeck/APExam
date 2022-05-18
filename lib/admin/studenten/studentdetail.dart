@@ -189,6 +189,36 @@ class _StudentDetailState extends State<StudentDetail> {
             ),
             const SizedBox(height: 20.0),
             Container(
+
+              width: double.infinity,
+              alignment: Alignment.topLeft,
+              child: Column(
+              children: [
+              Text(
+                "Heeft een "+ widget.student["score"].toString() + " Behaald",
+                ),
+               ],
+               ),
+            ),
+            ElevatedButton(
+                onPressed: () => {
+
+                },
+                style: ButtonStyle(
+                  textStyle: MaterialStateProperty.all(
+                    const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  minimumSize: MaterialStateProperty.all(
+                      const Size(double.infinity, 30)),
+                ),
+                child: Text("Wijzig punten".toUpperCase())
+            ),
+
+            const SizedBox(height: 20.0),
+            Container(
               width: double.infinity,
               alignment: Alignment.topLeft,
               child: Column(
@@ -215,6 +245,11 @@ class _StudentDetailState extends State<StudentDetail> {
     );
   }
 }
+
+Future calculatePoints() async{
+
+}
+
 
 Widget answersList(List<Answer> answers, String currentStudent) {
   List<Answer> studentAnswers = [];

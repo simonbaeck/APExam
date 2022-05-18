@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_project/admin/studenten/student.class.dart';
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 import 'answer.class.dart';
@@ -9,6 +11,8 @@ class MultipleChoiceQuestion extends StatefulWidget {
   final String studentId;
   final String vraag;
   final Answer? antwoord;
+  final bool isCorrect = false;
+
 
   const MultipleChoiceQuestion(
       {Key? key,
@@ -21,8 +25,9 @@ class MultipleChoiceQuestion extends StatefulWidget {
   @override
   State<MultipleChoiceQuestion> createState() => _MultipleChoiceQuestionState();
 }
-
+int score = 0;
 class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
+
   @override
   Widget build(BuildContext context) => WillPopScope(
         onWillPop: () async {
@@ -33,7 +38,19 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
           toAdd.vraag = widget.vraag;
           Toaster().showToastMsg("Antwoord opgeslagen");
           Navigator.of(context).pop(toAdd);
+          //calculate score
+          if(widget.question.oplossing == toAdd.antwoord){
+
+            //Update score
+            score++;
+            updateScore(studentId: toAdd.studentId, score: score);
+          } else {
+            print("Fout");
+          }
+
           return false;
+
+
         },
         child: Scaffold(
           appBar: AppBar(
@@ -42,6 +59,7 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
           body: multipleChoiceQuestion(),
         ),
       );
+
 
   late String defaultChoice;
   int defaultIndex = 0;
@@ -55,6 +73,7 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
     if (widget.antwoord != null) {
       defaultChoice = widget.antwoord!.antwoord;
     }
+
   }
 
   @override
@@ -91,5 +110,11 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
         ),
       ),
     );
+
+  }
+  Future updateScore({required String? studentId, required int? score}) async {
+    final docStudent = FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    await docStudent.update({"score": score}).catchError((e) => print(e));
+
   }
 }

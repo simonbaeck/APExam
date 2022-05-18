@@ -130,6 +130,7 @@ class _QuestionsScreenState extends State<QuestionsScreen>
                                   question.id = ds["id"];
                                   question.vraag = ds["vraag"];
                                   question.type = ds["type"];
+                                  //question.oplossing = ds["oplossing"];
 
                                   if (antwoorden
                                           .where(
@@ -175,6 +176,7 @@ class _QuestionsScreenState extends State<QuestionsScreen>
                                   question.id = ds["id"];
                                   question.vraag = ds["vraag"];
                                   question.type = ds["type"];
+                                  question.oplossing = ds["oplossing"];
 
                                   if (antwoorden
                                           .where(
@@ -225,6 +227,7 @@ class _QuestionsScreenState extends State<QuestionsScreen>
                                   mquestion.id = ds["id"];
                                   mquestion.vraag = ds["vraag"];
                                   mquestion.type = ds["type"];
+                                  mquestion.oplossing = ds["oplossing"];
                                   mquestion.antwoorden =
                                       List<String>.from(ds["antwoorden"]);
 
@@ -266,6 +269,7 @@ class _QuestionsScreenState extends State<QuestionsScreen>
                                             antwoorden
                                                 .where((e) =>
                                                     e.questionId == ds["id"])
+
                                                 .first);
                                         antwoorden[index] = value;
                                       }
@@ -280,9 +284,11 @@ class _QuestionsScreenState extends State<QuestionsScreen>
                                     trailing: antwoorden.contains(
                                             antwoorden.firstWhere(
                                                 (e) =>
+
                                                     e.questionId == ds["id"] &&
                                                     e.studentId ==
                                                         widget.currentStudentId,
+
                                                 orElse: () => Answer()))
                                         ? const Icon(
                                             Icons.check,
@@ -390,8 +396,8 @@ class _QuestionsScreenState extends State<QuestionsScreen>
             "studentLocation": GeoPoint(position.latitude, position.longitude)
           }).catchError((e) => print(e))
         });
-  }
 
+  }
   Future getExtraTime() async {
     CollectionReference collectionReference =
         FirebaseFirestore.instance.collection("studenten");
@@ -438,6 +444,7 @@ class _QuestionsScreenState extends State<QuestionsScreen>
         _answer.studentId = antwoord.studentId;
         _answer.antwoord = antwoord.antwoord;
         _answer.vraag = antwoord.vraag;
+
 
         await docAnswer.set(_answer.toMap());
       }
