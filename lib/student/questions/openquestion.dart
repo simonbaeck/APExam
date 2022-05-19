@@ -77,8 +77,17 @@ class _OpenQuestionState extends State<OpenQuestion> {
                         hintText: "Antwoord",
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
+                    const SizedBox(height: 10),
+                    Container(
+                      alignment: Alignment.topLeft,
+                      margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                      child: Text(
+                        "Antwoord wordt automatisch opgeslagen bij het verlaten van dit scherm.",
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 16.0,
+                        ),
+                      ),
                     ),
                   ],
                 ),

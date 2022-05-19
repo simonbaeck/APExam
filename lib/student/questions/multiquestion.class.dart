@@ -3,6 +3,7 @@ class MultiChoiceQuestion {
   late String type;
   late String vraag;
   late List<String> antwoorden;
+  late String oplossing;
 
 // Question({
 //   required this.id,

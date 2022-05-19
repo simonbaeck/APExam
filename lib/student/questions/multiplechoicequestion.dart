@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../../services/toaster.dart';
 import '../../styles/styles.dart';
@@ -23,6 +24,8 @@ class MultipleChoiceQuestion extends StatefulWidget {
 }
 
 class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
+  late int score;
+
   @override
   Widget build(BuildContext context) => WillPopScope(
         onWillPop: () async {
@@ -32,6 +35,14 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
           toAdd.studentId = widget.studentId;
           toAdd.vraag = widget.vraag;
           Toaster().showToastMsg("Antwoord opgeslagen");
+          setState(() {
+            if(identical(widget.question.oplossing.toString().toLowerCase(), toAdd.antwoord.toString().toLowerCase())) {
+              score = 1;
+            } else {
+              score = 0;
+            }
+          });
+          updateScore(studentId: toAdd.studentId, score: score);
           Navigator.of(context).pop(toAdd);
           return false;
         },
@@ -51,6 +62,9 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      score = 0;
+    });
     widget.question.antwoorden.insert(0, "");
     defaultChoice = widget.question.antwoorden[0];
     if (widget.antwoord != null) {
@@ -87,10 +101,39 @@ class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
                         }))
                     .toList(),
               ),
+              const SizedBox(height: 10),
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                child: Text(
+                  "Antwoord wordt automatisch opgeslagen bij het verlaten van dit scherm.",
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 16.0,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future updateScore({required String? studentId, required int? score}) async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference = collectionReference.doc(studentId);
+    Future<DocumentSnapshot> docSnapshot = documentReference.get();
+
+    await docSnapshot.then((data) {
+      var curScore = data["score"];
+      if (score == 1) {
+        documentReference.update({"score": curScore + 1 });
+      } else if (score == 0 && curScore > 0) {
+        documentReference.update({"score": curScore - 1 });
+      } else {
+        documentReference.update({"score": curScore });
+      }
+    });
   }
 }

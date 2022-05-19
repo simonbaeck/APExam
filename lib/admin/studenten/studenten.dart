@@ -186,24 +186,31 @@ class _StudentenScreenState extends State<StudentenScreen> {
   }
 
   Future removeStudents() async {
+    setState(() {
+      isDeleting = true;
+    });
+
     try {
-      final collection = FirebaseFirestore.instance.collection('studenten');
-      final snapshots = await collection.get();
-      final doclength = snapshots.docs.length;
+      final studentCollection = FirebaseFirestore.instance.collection('studenten');
+      final studentSnapshot = await studentCollection.get();
+      final studentDocLength = studentSnapshot.docs.length;
 
-      setState(() {
-        isDeleting = true;
-      });
+      final antwoordenCollection = FirebaseFirestore.instance.collection('antwoorden');
+      final antwoordenSnapshot = await antwoordenCollection.get();
 
-      for (var doc in snapshots.docs) {
-        await doc.reference.delete();
+      for (var student in studentSnapshot.docs) {
+        await student.reference.delete();
+      }
+
+      for (var antwoorden in antwoordenSnapshot.docs) {
+        await antwoorden.reference.delete();
       }
 
       setState(() {
         isDeleting = false;
       });
 
-      Toaster().showToastMsg("$doclength Studenten verwijderd");
+      Toaster().showToastMsg("$studentDocLength Studenten verwijderd");
     } on FirebaseException catch (e) {
       Toaster().showToastMsg(e.message);
     }

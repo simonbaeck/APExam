@@ -6,14 +6,14 @@ import 'package:flutter_project/admin/studenten/studenten.dart';
 import 'package:flutter_project/styles/styles.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class AdminDasboard extends StatefulWidget {
-  const AdminDasboard({Key? key}) : super(key: key);
+class AdminDashboard extends StatefulWidget {
+  const AdminDashboard({Key? key}) : super(key: key);
 
   @override
   _AdminDashBoardState createState() => _AdminDashBoardState();
 }
 
-class _AdminDashBoardState extends State<AdminDasboard> {
+class _AdminDashBoardState extends State<AdminDashboard> {
   int _selectedIndex = 0;
   PageController pageController = PageController();
 
@@ -60,7 +60,7 @@ class _AdminDashBoardState extends State<AdminDasboard> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.list_rounded),
-            label: 'Examens',
+            label: 'Examen',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.groups_rounded),

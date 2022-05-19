@@ -59,8 +59,6 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
     super.initState();
     emailController.addListener(onValueChange);
     passwordController.addListener(onValueChange);
-    emailController.text = "admin@test.com";
-    passwordController.text = "admin321";
   }
 
   @override

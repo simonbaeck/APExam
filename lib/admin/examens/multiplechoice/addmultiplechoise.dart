@@ -219,7 +219,6 @@ class _AddMultplechoice extends State<AddMultplechoice> {
     });
 
     setState(() {
-      print(vragen);
       defaultChoice = vragen[0].vraag.toString();
       hasContinued = true;
     });
