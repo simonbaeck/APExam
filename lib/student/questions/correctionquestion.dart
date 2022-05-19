@@ -25,10 +25,14 @@ class CorrectionQuestion extends StatefulWidget {
 int score = 0;
 class _CorrectionQuestionState extends State<CorrectionQuestion> {
   final textFieldController = TextEditingController();
+  late int score;
 
   @override
   void initState() {
     super.initState();
+    setState(() {
+      score = 0;
+    });
     if (widget.antwoord != null) {
       textFieldController.text = widget.antwoord!.antwoord;
     }
@@ -43,6 +47,14 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
           toAdd.studentId = widget.studentId;
           toAdd.vraag = widget.vraag;
           Toaster().showToastMsg("Antwoord opgeslagen");
+          setState(() {
+            if(identical(widget.question.oplossing.toString().toLowerCase(), toAdd.antwoord.toString().toLowerCase())) {
+              score = 1;
+            } else {
+              score = 0;
+            }
+          });
+          updateScore(studentId: toAdd.studentId, score: score);
           Navigator.of(context).pop(toAdd);
 
           print(toAdd.antwoord);
@@ -73,15 +85,25 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Corrigeer volgende code:',
+                'Corrigeer volgende code',
                 style: Styles.headerStyleH2,
               ),
               const SizedBox(
                 height: 20,
               ),
-              Text(
-                widget.question.vraag,
-                style: Styles.textColorBlack,
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5.0),
+                  color: Colors.grey.shade200,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(
+                    widget.question.vraag,
+                    style: Styles.codeBlockText,
+                  ),
+                ),
               ),
               const SizedBox(
                 height: 20,
@@ -97,8 +119,17 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
                   hintText: "Antwoord",
                 ),
               ),
-              const SizedBox(
-                height: 20,
+              const SizedBox(height: 10),
+              Container(
+                alignment: Alignment.topLeft,
+                margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                child: Text(
+                  "Antwoord wordt automatisch opgeslagen bij het verlaten van dit scherm.",
+                  style: TextStyle(
+                    color: Colors.grey.shade500,
+                    fontSize: 16.0,
+                  ),
+                ),
               ),
             ],
           ),
@@ -106,9 +137,21 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
       ),
     );
   }
-  Future updateScore({required String? studentId, required int? score}) async {
-    final docStudent = FirebaseFirestore.instance.collection("studenten").doc(studentId);
-    await docStudent.update({"score": score}).catchError((e) => print(e));
 
+  Future updateScore({required String? studentId, required int? score}) async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference = collectionReference.doc(studentId);
+    Future<DocumentSnapshot> docSnapshot = documentReference.get();
+
+    await docSnapshot.then((data) {
+      var curScore = data["score"];
+      if (score == 1) {
+        documentReference.update({"score": curScore + 1 });
+      } else if (score == 0 && curScore > 0) {
+        documentReference.update({"score": curScore - 1 });
+      } else {
+        documentReference.update({"score": curScore });
+      }
+    });
   }
 }

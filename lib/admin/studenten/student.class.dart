@@ -38,7 +38,7 @@ class Student {
       'studentLocation': studentLocation,
       'extraTime': extraTime,
       'exitedExamCount': exitedExamCount,
-      'score':score,
+      'score': score,
     };
   }
 }

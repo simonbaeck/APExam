@@ -18,6 +18,12 @@ class Styles {
     ),
   );
 
+  static TextStyle codeBlockText = GoogleFonts.firaCode(
+    textStyle: const TextStyle(
+      fontSize: 16,
+    ),
+  );
+
   static TextStyle textColorBlack = const TextStyle(
     color: Colors.black,
     // fontFamily: GoogleFonts.ubuntu().fontFamily,
