@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../services/loader.dart';
+import '../../services/toaster.dart';
 import '../../styles/styles.dart';
 import 'answer.class.dart';
 
@@ -14,13 +15,16 @@ class StudentDetail extends StatefulWidget {
   final DocumentSnapshot student;
   const StudentDetail({Key? key, required this.student}) : super(key: key);
 
+
   @override
   State<StudentDetail> createState() => _StudentDetailState();
 }
 
 class _StudentDetailState extends State<StudentDetail> {
-  late GeoPoint position;
+  final changeScoreController = TextEditingController();
 
+  late GeoPoint position;
+  bool hasChangedScore = false;
   Stream<List<Answer>> readAnswers() => FirebaseFirestore.instance
       .collection('antwoorden')
       .snapshots()
@@ -34,6 +38,7 @@ class _StudentDetailState extends State<StudentDetail> {
   void initState() {
     super.initState();
     position = widget.student["studentLocation"];
+
   }
 
   @override
@@ -195,14 +200,26 @@ class _StudentDetailState extends State<StudentDetail> {
               child: Column(
               children: [
               Text(
-                "Heeft een "+ widget.student["score"].toString() + " Behaald",
+                "Heeft een: "+ widget.student["score"].toString() + " behaald",
                 ),
                ],
                ),
             ),
-            ElevatedButton(
-                onPressed: () => {
+            const SizedBox(height: 20.0),
+           Container(
+             //width: 10,
+             child:
+             TextField(
+               controller: changeScoreController,
 
+             )
+           ),
+            const SizedBox(height: 20.0),
+            ElevatedButton(
+                onPressed: () {
+                  final score = changeScoreController.text;
+                  //var local = int.parse(score);
+                  changeScore(inpScore: int.parse(score));
                 },
                 style: ButtonStyle(
                   textStyle: MaterialStateProperty.all(
@@ -216,7 +233,6 @@ class _StudentDetailState extends State<StudentDetail> {
                 ),
                 child: Text("Wijzig punten".toUpperCase())
             ),
-
             const SizedBox(height: 20.0),
             Container(
               width: double.infinity,
@@ -244,10 +260,12 @@ class _StudentDetailState extends State<StudentDetail> {
       ),
     );
   }
-}
-
-Future calculatePoints() async{
-
+  Future changeScore({required int inpScore}) async{
+    final docStudent = FirebaseFirestore.instance.collection("studenten").doc(widget.student.id);
+    await docStudent.update({"score": inpScore}).catchError((e) => print(e));
+    Toaster().showToastMsg("Score gewijzigd");
+    Navigator.of(context).pop();
+  }
 }
 
 
