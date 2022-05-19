@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_project/student/questions/question.class.dart';
 import '../../services/toaster.dart';
@@ -21,7 +22,7 @@ class CorrectionQuestion extends StatefulWidget {
   @override
   State<CorrectionQuestion> createState() => _CorrectionQuestionState();
 }
-
+int score = 0;
 class _CorrectionQuestionState extends State<CorrectionQuestion> {
   final textFieldController = TextEditingController();
 
@@ -43,6 +44,16 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
           toAdd.vraag = widget.vraag;
           Toaster().showToastMsg("Antwoord opgeslagen");
           Navigator.of(context).pop(toAdd);
+
+          print(toAdd.antwoord);
+          print(widget.question.oplossing);
+
+          if(identical(widget.question.oplossing.toString().toLowerCase(), toAdd.antwoord.toString().toLowerCase())){
+            print("juist");
+            score++;
+            updateScore(studentId: toAdd.studentId, score: score);
+          }
+
           return false;
         },
         child: Scaffold(
@@ -94,5 +105,10 @@ class _CorrectionQuestionState extends State<CorrectionQuestion> {
         ),
       ),
     );
+  }
+  Future updateScore({required String? studentId, required int? score}) async {
+    final docStudent = FirebaseFirestore.instance.collection("studenten").doc(studentId);
+    await docStudent.update({"score": score}).catchError((e) => print(e));
+
   }
 }

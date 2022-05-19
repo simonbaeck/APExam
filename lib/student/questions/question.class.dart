@@ -4,6 +4,7 @@ class Question {
   late String id;
   late String type;
   late String vraag;
+  late String oplossing;
 
   // Question({
   //   required this.id,
