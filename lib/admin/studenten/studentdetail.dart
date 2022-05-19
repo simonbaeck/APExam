@@ -23,9 +23,7 @@ class StudentDetail extends StatefulWidget {
 
 class _StudentDetailState extends State<StudentDetail> {
   final changeScoreController = TextEditingController();
-
   late GeoPoint position;
-  final changeScoreController = TextEditingController();
   bool hasChangedScore = false;
 
   Stream<List<Answer>> readAnswers() => FirebaseFirestore.instance
@@ -281,46 +279,6 @@ class _StudentDetailState extends State<StudentDetail> {
               width: double.infinity,
               alignment: Alignment.topLeft,
               child: Column(
-              children: [
-              Text(
-                "Heeft een: "+ widget.student["score"].toString() + " behaald",
-                ),
-               ],
-               ),
-            ),
-            const SizedBox(height: 20.0),
-           Container(
-             //width: 10,
-             child:
-             TextField(
-               controller: changeScoreController,
-
-             )
-           ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-                onPressed: () {
-                  final score = changeScoreController.text;
-                  //var local = int.parse(score);
-                  changeScore(inpScore: int.parse(score));
-                },
-                style: ButtonStyle(
-                  textStyle: MaterialStateProperty.all(
-                    const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  minimumSize: MaterialStateProperty.all(
-                      const Size(double.infinity, 30)),
-                ),
-                child: Text("Wijzig punten".toUpperCase())
-            ),
-            const SizedBox(height: 20.0),
-            Container(
-              width: double.infinity,
-              alignment: Alignment.topLeft,
-              child: Column(
                 children: [
                   Text(
                     "Instellingen",
@@ -343,14 +301,27 @@ class _StudentDetailState extends State<StudentDetail> {
       ),
     );
   }
-  Future changeScore({required int inpScore}) async{
-    final docStudent = FirebaseFirestore.instance.collection("studenten").doc(widget.student.id);
-    await docStudent.update({"score": inpScore}).catchError((e) => print(e));
-    Toaster().showToastMsg("Score gewijzigd");
-    Navigator.of(context).pop();
-  }
-}
 
+  Future updateExtraTime({ required String? studentId }) async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference = collectionReference.doc(studentId);
+    Future<DocumentSnapshot> docSnapshot = documentReference.get();
+
+    await docSnapshot.then((data) {
+      toggleIsLoading = true;
+      documentReference.update({"extraTime": !_toggled }).then((value) {
+        setState(() {
+          _toggled = !_toggled;
+          toggleIsLoading = false;
+        });
+      });
+    });
+  }
+
+  Future getExtraTime({ required String? studentId }) async {
+    CollectionReference collectionReference = FirebaseFirestore.instance.collection("studenten");
+    DocumentReference documentReference = collectionReference.doc(studentId);
+    Future<DocumentSnapshot> docSnapshot = documentReference.get();
 
     await docSnapshot.then((data) {
       setState(() {
@@ -384,6 +355,7 @@ class _StudentDetailState extends State<StudentDetail> {
         .catchError((e) => print(e));
     Toaster().showToastMsg("Score gewijzigd");
   }
+
 }
 
 Widget answersList(List<Answer> answers, String currentStudent) {

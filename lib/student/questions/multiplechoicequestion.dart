@@ -25,8 +25,6 @@ class MultipleChoiceQuestion extends StatefulWidget {
   @override
   State<MultipleChoiceQuestion> createState() => _MultipleChoiceQuestionState();
 }
-int score = 0;
-class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
 
 class _MultipleChoiceQuestionState extends State<MultipleChoiceQuestion> {
   late int score;
