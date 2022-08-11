@@ -12,3 +12,6 @@ user: test@admin.com<br>
 pass: demoadmin<br>
 http://apexam.simonbaeck.com/#/
 
+### Final score
+20/20
+
